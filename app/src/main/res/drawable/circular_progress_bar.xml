@@ -1,0 +1,22 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@android:id/background"
+        android:drawable="@drawable/circle_bg"
+        android:gravity="center"/>
+
+    <item android:id="@android:id/progress">
+        <rotate
+            android:fromDegrees="0"
+            android:toDegrees="360"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape
+                android:shape="oval">
+                <stroke
+                    android:width="4dp"
+                    android:color="#FDC00F"
+                />
+            </shape>
+        </rotate>
+    </item>
+</layer-list>

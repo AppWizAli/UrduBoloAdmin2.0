@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "432215955529",
+    "project_id": "urdubolotv-c88cd",
+    "storage_bucket": "urdubolotv-c88cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432215955529:android:3be103446dc16724d58798",
+        "android_client_info": {
+          "package_name": "com.urduboltv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoY5uvXJ7egtjbjxY5s_aXHMGZwbKb-N8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432215955529:android:f3916ce65ecfd1d7d58798",
+        "android_client_info": {
+          "package_name": "com.urduboltv.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoY5uvXJ7egtjbjxY5s_aXHMGZwbKb-N8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Urdu Bolo Tv</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--
+    <string-array name="listofbanks">
+        <item>Allied Bank Limited (ABL)</item>
+        <item>Askari Bank</item>
+        <item>Bank Alfalah Limited (BAFL)</item>
+        <item>Bank Al-Habib Limited (BAHL)</item>
+        <item>BankIslami Pakistan Limited</item>
+        <item>Bank of Punjab (BOP)</item>
+        <item>Bank of Khyber</item>
+        <item>EasyPaisa</item>
+        <item>Faysal Bank Limited (FBL)</item>
+        <item>Habib Bank Limited (HBL)</item>
+        <item>Habib Metropolitan Bank Limited</item>
+        <item>HBL Konnect</item>
+        <item>JS Bank Limited</item>
+        <item>JazzCash</item>
+        <item>MCB Bank Limited</item>
+        <item>MCB Islamic Bank Limited</item>
+        <item>Meezan Bank Limited</item>
+        <item>National Bank of Pakistan (NBP)</item>
+        <item>NayaPay</item>
+        <item>Sindh Bank</item>
+        <item>Summit Bank Pakistan</item>
+        <item>United Bank Limited (UBL)</item>
+        <item>Upaisa</item>
+        <item>Zarai Taraqiati Bank Limited (ZTBL)</item>
+    </string-array>-->
+
+    <style name="TransparentTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+    </style>
+
+    <style name="FullWidthDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>
+

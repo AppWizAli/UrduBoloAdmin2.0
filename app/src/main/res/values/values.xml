@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">62412168385-1acqn8ftedenabcq414naui4tlrtidua.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">62412168385</string>
+    <string name="google_api_key" translatable="false">AIzaSyB5FJL1Ce63V3CZ0XCMJMidDlwvC69MA8E</string>
+    <string name="google_app_id" translatable="false">1:62412168385:android:9f0a0092631a7f793e4840</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyB5FJL1Ce63V3CZ0XCMJMidDlwvC69MA8E</string>
+    <string name="google_storage_bucket" translatable="false">lifechanger-633f8.appspot.com</string>
+    <string name="project_id" translatable="false">lifechanger-633f8</string>
+</resources>
