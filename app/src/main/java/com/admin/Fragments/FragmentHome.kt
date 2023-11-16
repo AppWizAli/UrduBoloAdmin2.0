@@ -182,6 +182,11 @@ sharedPrefManager=SharedPrefManager(mContext)
     override fun onDeleteClick(modelDrama: ModelDrama) {
 
     }
+
+    override fun onEditClick(modelDrama: ModelDrama) {
+        Toast.makeText(mContext, "Available Soon!!", Toast.LENGTH_SHORT).show()
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -210,11 +215,21 @@ sharedPrefManager=SharedPrefManager(mContext)
                             list.add(document.toObject(ModelDrama::class.java))
                         }
                     }
-
-                    binding.rvdrama.layoutManager = LinearLayoutManager(mContext)
-                       binding.rvdrama.adapter = AdapterDrama(mContext, list, this@FragmentHome)
                     binding.shimmerLayout.stopShimmer() // Stop shimmer effect once data is loaded
                     binding.shimmerLayout.visibility = View.GONE
+                    val sortedList = list.sortedBy { it.dramaNumber?.toIntOrNull() ?: 0 }
+                    if(list.isEmpty())
+                    {
+                        binding.nothing.visibility=View.VISIBLE
+                    }
+                    else
+                    {
+                        binding.nothing.visibility=View.GONE
+                        binding.rvdrama.layoutManager = LinearLayoutManager(mContext)
+                        binding.rvdrama.adapter = AdapterDrama(mContext, sortedList, this@FragmentHome)
+
+                    }
+
                 } else {
                     Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
                 }

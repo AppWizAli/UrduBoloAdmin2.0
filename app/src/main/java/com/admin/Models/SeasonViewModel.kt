@@ -7,6 +7,7 @@ import com.admin.Constants
 import com.admin.Data.Repo
 import com.admin.Data.SharedPrefManager
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
 class SeasonViewModel(context: Application) : AndroidViewModel(context) {
@@ -25,4 +26,14 @@ class SeasonViewModel(context: Application) : AndroidViewModel(context) {
         return  repo.getSeasonList(docId)
     }
 
+    suspend fun updateSeason(modelSeason: ModelSeason)
+    {
+        repo.updateSeason(modelSeason)
+    }
+
+
+    suspend fun getSeasonbyId(type:String):Task<DocumentSnapshot>
+    {
+        return repo.getSeasonbyId(type)
+    }
 }

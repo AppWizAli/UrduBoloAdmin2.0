@@ -35,8 +35,7 @@ class VideoAdapter (var activity: Context, val data: List<ModelVideo>, val lisnt
 
             itemBinding.episodeNo.text=modelVideo.episodeno
             itemBinding.totalpisodes.text=modelVideo.totalepisodes
-            Glide.with(activity).load(modelVideo.thumbnail).centerCrop()
-                .placeholder(R.drawable.ic_launcher_background).into(itemBinding.thumbnail)
+            Glide.with(activity).load(modelVideo.thumbnail).placeholder(R.drawable.placeholder).centerCrop().into(itemBinding.thumbnail)
 
             itemBinding.videoConatiner.setOnClickListener{ lisnter.onItemClick(modelVideo)}
 

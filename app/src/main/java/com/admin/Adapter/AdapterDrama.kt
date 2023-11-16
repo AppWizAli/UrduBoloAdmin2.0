@@ -25,6 +25,7 @@ class AdapterDrama (var context: Context, val data: List<ModelDrama>, val listen
     interface OnItemClickListener {
         fun onItemClick(modelDrama: ModelDrama)
         fun onDeleteClick(modelDrama: ModelDrama)
+        fun onEditClick(modelDrama: ModelDrama)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ItemDramaBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -36,10 +37,15 @@ class AdapterDrama (var context: Context, val data: List<ModelDrama>, val listen
         fun bind(modelDrama: ModelDrama) {
 
 itemBinding.dramaName.text=modelDrama.dramaName
-            Glide.with(context).load(modelDrama.thumbnail).centerCrop()
-                .placeholder(R.drawable.ic_launcher_background).into(itemBinding.dramaImage)
+            Glide.with(context).load(modelDrama.thumbnail).centerCrop().placeholder(R.drawable.ic_launcher_background)
+                .into(itemBinding.dramaImage)
 
             itemBinding.containerDrama.setOnClickListener{ listener.onItemClick(modelDrama)}
+            itemBinding.edit.setOnClickListener{ listener.onEditClick(modelDrama)}
+
+            val dateTimeFormat = SimpleDateFormat("dd MMMM yyyy, h:mm a", Locale.getDefault())
+            val formattedDateTime = dateTimeFormat.format(modelDrama.uploadedAt.toDate()) // Assuming timestamp is a Firebase Timestamp
+            itemBinding.uploadedAt.text = formattedDateTime
 
         }
 

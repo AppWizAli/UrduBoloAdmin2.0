@@ -8,10 +8,10 @@ var seasonNo: String = "",
 var docId: String = "",
 var dramaId: String = "",
 var totalEpisode: String = "",
-var uploadedepisodes: String = "",
+var uploadedepisodes: String = "0",
 var thumbnail: String = "",
-var dramathumbnail: String = "",
-var subtitle: String = "",
+var uploadedvideos: String = "0",
+var dramaName: String = "",
 var uploadedAt: Timestamp = Timestamp.now()
 ){
     override fun toString(): String {

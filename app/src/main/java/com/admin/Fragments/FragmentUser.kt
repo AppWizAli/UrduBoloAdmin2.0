@@ -66,8 +66,7 @@ class FragmentUser : Fragment(), AdapterUser.OnItemClickListener {
 constants=Constants()
         sharedPrefManager=SharedPrefManager(mContext)
 setData()
-           binding.rvusers.layoutManager = LinearLayoutManager(mContext)
-           binding.rvusers.adapter= AdapterUser("User",sharedPrefManager.getUserList(),this)
+
 
         binding.floatingaction.setOnClickListener {
             showDialogAdduser()
@@ -137,12 +136,14 @@ setData()
 
              dialog.dismiss()
              utils.endLoadingAnimation()
+             setData()
              Toast.makeText(mContext, constants.USER_ADDED_SUCCESSFULLY, Toast.LENGTH_SHORT).show()
          }
          else
          {
              dialog.dismiss()
              utils.endLoadingAnimation()
+             setData()
              Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
          }
      }
@@ -167,7 +168,8 @@ setData()
                                         ModelUser::class.java
                                     )
                                 )
-                            sharedPrefManager.putUserList(list)
+                            binding.rvusers.layoutManager = LinearLayoutManager(mContext)
+                            binding.rvusers.adapter= AdapterUser("User",list,this@FragmentUser)
 
                         }
                     } else Toast.makeText(

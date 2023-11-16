@@ -26,13 +26,17 @@
         android:layout_marginStart="20dp"
         android:layout_gravity="center"
         android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Artegrul"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:id="@+id/drama_name"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Artegrul"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:id="@+id/drama_name"/>
+
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,6 +44,10 @@
             android:textColor="@color/white"
             android:layout_marginTop="2dp"
             android:id="@+id/uploadedAt"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,5 +55,15 @@
             android:text="View Seasons"
             android:textColor="#FEC10F"
             android:id="@+id/viewSeasons"/>
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/baseline_mode_edit_24"/>
     </LinearLayout>
+    </LinearLayout>
+
+
 </LinearLayout>

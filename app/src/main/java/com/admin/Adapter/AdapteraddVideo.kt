@@ -38,7 +38,7 @@ class AdapteraddVideo (var context: Context, val data: List<ModelVideo>, val lis
 
 itemBinding.episodeNumber.text=modelDrama.episodeno
             Glide.with(context).load(modelDrama.thumbnail).centerCrop()
-                .placeholder(R.drawable.ic_launcher_background).into(itemBinding.thumbnail)
+                .into(itemBinding.thumbnail)
 
             itemBinding.conatiner.setOnClickListener{ listener.onItemClick(modelDrama)}
 

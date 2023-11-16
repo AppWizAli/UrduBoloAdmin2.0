@@ -14,9 +14,11 @@ import com.admin.Models.ModelUser
 import com.admin.Models.ModelVideo
 import com.admin.Models.ModelVideoManagment
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.UploadTask
 import kotlinx.coroutines.tasks.await
+import okhttp3.internal.concurrent.TaskQueue
 import okhttp3.internal.userAgent
 
 class Repo(var context: Context) {
@@ -170,4 +172,14 @@ class Repo(var context: Context) {
 
 
 
+    suspend fun updateSeason(modelSeason: ModelSeason)
+    {
+
+        SeasonCollection.document(modelSeason.docId).set(modelSeason)
+    }
+
+    suspend fun getSeasonbyId(type:String):Task<DocumentSnapshot>
+    {
+       return SeasonCollection.document(type).get()
+    }
 }

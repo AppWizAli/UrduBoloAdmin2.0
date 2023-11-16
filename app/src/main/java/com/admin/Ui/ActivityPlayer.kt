@@ -49,7 +49,7 @@ class ActivityPlayer : AppCompatActivity() {
         mediaController.setAnchorView(binding.videoView)
         binding.videoView.setMediaController(mediaController)
 
-        val videoUri = Uri.parse(videoUrl)
+        val videoUri = Uri.parse("https://www.youtube.com/watch?v=2cMc97yuT_4")
         binding.videoView.setVideoURI(videoUri)
 
         binding.videoView.setOnPreparedListener {

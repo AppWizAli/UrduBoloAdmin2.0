@@ -185,9 +185,9 @@ user=ModelUser()
                     val videoList = taskResult.map { documentSnapshot ->
                         documentSnapshot.toObject(ModelVideo::class.java)
                     }.filterNotNull()
-
+                    val sortedList = videoList.sortedBy { it.episodeno?.toIntOrNull() ?: 0 }
                     // Update the adapter with the new videoList
-                    adapter.updateList(videoList)
+                    adapter.updateList(sortedList)
                 } else {
                     Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
                 }

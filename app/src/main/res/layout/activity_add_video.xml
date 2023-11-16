@@ -10,32 +10,42 @@
 <androidx.recyclerview.widget.RecyclerView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
     android:id="@+id/rvAddedVideos"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/baseline_add_24"
-        android:id="@+id/floatingAction"
-        android:layout_margin="10dp"
-        android:layout_alignParentEnd="true"
-/>
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/baseline_add_24" />
 
     <Button
         android:layout_width="wrap_content"
+        android:id="@+id/upload"
         android:layout_height="wrap_content"
-        android:text="Upload"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:drawableEnd="@drawable/baseline_keyboard_arrow_right_24"
-        android:layout_alignParentEnd="true"/>
+        android:text="Upload" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/floatingAction"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentStart="true"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="wrap_content"
@@ -44,9 +54,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:text="Episode Number: "/>
             <TextView
                 android:id="@+id/episodeNumber"
+                android:textColor="#FDC00F"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"/>
@@ -58,11 +71,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:text="Privacy: "/>
             <TextView
                 android:id="@+id/privacy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FDC00F"
                 android:text="Public"/>
         </LinearLayout>
         <LinearLayout
@@ -72,11 +88,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
                 android:text="Downlaod: "/>
             <TextView
                 android:id="@+id/downoladAccess"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FDC00F"
                 android:text="Gallery"/>
         </LinearLayout>
         <LinearLayout
@@ -86,11 +105,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Description"/>
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Description: "/>
             <TextView
                 android:id="@+id/description"
-                android:layout_width="190dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#FDC00F"
                 android:text="hey,this is the latest video"/>
         </LinearLayout>
 

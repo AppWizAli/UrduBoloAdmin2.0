@@ -79,8 +79,8 @@ class AdapterManageVideo(
         fun bind(modelVideo: ModelVideo) {
             itemBinding.dramaName.text = modelVideo.dramaName
             itemBinding.episodeNumber.text = modelVideo.episodeno
-            Glide.with(activity).load(modelVideo.thumbnail).centerCrop()
-                .placeholder(R.drawable.ic_launcher_background).into(itemBinding.thumbnail)
+            itemBinding.totalEpisode.text = modelVideo.totalepisodes
+            Glide.with(activity).load(modelVideo.thumbnail).placeholder(R.drawable.img_4).centerCrop().into(itemBinding.thumbnail)
 
             itemBinding.btnradio.isChecked = modelVideo in (activity as ActivityManageVideo).listaccessVideos
 

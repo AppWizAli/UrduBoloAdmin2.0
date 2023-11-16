@@ -109,6 +109,10 @@ setAdapter()
 
     }
 
+    override fun onEditClick(modelSeason: ModelSeason) {
+        Toast.makeText(mContext, "Available Soon!!", Toast.LENGTH_SHORT).show()
+    }
+
     private fun showDialogAddSeason() {
         dialog = Dialog(mContext, R.style.FullWidthDialog)
         dialog.setContentView(R.layout.dialog_season)
@@ -148,7 +152,7 @@ setAdapter()
                             // Update the ModelDrama with the thumbnail URL
                             modelSeason.thumbnail = thumbnailUrl
 
-
+modelSeason.dramaName=modelDrama.dramaName
                             // Add the updated ModelDrama to Firestore
                             lifecycleScope.launch {
                                 seasonViewModel.addSeason(modelSeason)
@@ -268,9 +272,9 @@ sharedPrefManager.putSeasonList(list)
                             list.add(document.toObject(ModelSeason::class.java))
                         }
                     }
-
+                    val sortedList = list.sortedBy { it.seasonNo?.toIntOrNull() ?: 0 }
                     binding.rvseasons.layoutManager = LinearLayoutManager(mContext)
-                    binding.rvseasons.adapter = AdapterSeason(mContext, list, this@ActivitySeason)
+                    binding.rvseasons.adapter = AdapterSeason(mContext, sortedList, this@ActivitySeason)
                 } else {
                     Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
                 }

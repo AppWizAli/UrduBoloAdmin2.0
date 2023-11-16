@@ -4,6 +4,7 @@
     android:layout_height="150dp"
     android:background="@android:color/transparent">
 
+    <!-- Progress bar -->
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -15,13 +16,51 @@
         android:progress="0"
         android:progressDrawable="@drawable/circular_progress_bar" />
 
+    <!-- TextViews for episode count and percentage -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true">
+
+        <!-- Text view for uploaded count -->
+        <TextView
+            android:id="@+id/textUploaded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <!-- Separator '/' -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Text view for total count -->
+        <TextView
+            android:id="@+id/textTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <!-- Text view for percentage -->
+
+    </LinearLayout>
     <TextView
         android:id="@+id/textPercentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:text="0%"
         android:textColor="#000"
-        android:textSize="18sp" />
-
+        android:layout_centerInParent="true"
+        android:textSize="18sp"/>
 </RelativeLayout>

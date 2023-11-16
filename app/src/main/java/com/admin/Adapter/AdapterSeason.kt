@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide
 import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.ItemDramaBinding
 import com.urduboltv.admin.databinding.ItemSeasonBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AdapterSeason (var activity: Context, val data: List<ModelSeason>, val listener: OnItemClickListener) : RecyclerView.Adapter<AdapterSeason.ViewHolder>(){
 
@@ -20,6 +22,7 @@ class AdapterSeason (var activity: Context, val data: List<ModelSeason>, val lis
     interface OnItemClickListener {
         fun onItemClick(modelSeason: ModelSeason)
         fun onDeleteClick(modelSeason: ModelSeason)
+        fun onEditClick(modelSeason: ModelSeason)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ItemSeasonBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -32,11 +35,14 @@ class AdapterSeason (var activity: Context, val data: List<ModelSeason>, val lis
 
             itemBinding.dramaName.text=modelSeason.seasonNo
             itemBinding.totalepisodes.text=modelSeason.totalEpisode
+            itemBinding.episodeno.text=modelSeason.uploadedvideos
             itemBinding.episodeno.text=modelSeason.uploadedepisodes
-            Glide.with(activity).load(modelSeason.thumbnail).centerCrop()
-                .placeholder(R.drawable.ic_launcher_background).into(itemBinding.dramaImage)
-
+            Glide.with(activity).load(modelSeason.thumbnail).centerCrop().placeholder(R.drawable.placeholder).into(itemBinding.dramaImage)
+            val dateTimeFormat = SimpleDateFormat("dd MMMM yyyy, h:mm a", Locale.getDefault())
+            val formattedDateTime = dateTimeFormat.format(modelSeason.uploadedAt.toDate()) // Assuming timestamp is a Firebase Timestamp
+            itemBinding.uploadedAt.text = formattedDateTime
             itemBinding.containerDrama.setOnClickListener{ listener.onItemClick(modelSeason)}
+            itemBinding.edit.setOnClickListener{ listener.onEditClick(modelSeason)}
 
         }
 
