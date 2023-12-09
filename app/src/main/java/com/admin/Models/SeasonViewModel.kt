@@ -21,14 +21,18 @@ class SeasonViewModel(context: Application) : AndroidViewModel(context) {
     suspend fun addSeason(modelSeason: ModelSeason): LiveData<Boolean> {
         return repo.addSeason(modelSeason)
     }
+
     suspend fun getSeasonList(docId:String): Task<QuerySnapshot> {
 
         return  repo.getSeasonList(docId)
     }
 
-    suspend fun updateSeason(modelSeason: ModelSeason)
+    suspend fun updateSeason(modelSeason: ModelSeason): LiveData<Boolean>
     {
-        repo.updateSeason(modelSeason)
+       return  repo.updateSeason(modelSeason)
+    }   fun deleteSeason(modelSeason: ModelSeason): LiveData<Boolean>
+    {
+       return  repo.deleteSeason(modelSeason)
     }
 
 

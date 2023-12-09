@@ -20,6 +20,14 @@ class VideoViewModel(context: Application) : AndroidViewModel(context) {
     suspend fun addVideo(modelVideo: ModelVideo): LiveData<Boolean> {
         return repo.addVideo(modelVideo)
     }
+    fun deleteVideo(modelSeason: ModelVideo): LiveData<Boolean>
+    {
+        return  repo.deleteVideo(modelSeason)
+    }
+    suspend fun UpdateVideo(modelSeason: ModelVideo): LiveData<Boolean>
+    {
+        return  repo.UpdateVideo(modelSeason)
+    }
 
     suspend fun getVideoList(docId:String): Task<QuerySnapshot> {
 

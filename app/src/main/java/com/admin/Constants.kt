@@ -7,6 +7,7 @@ class Constants {
     public var DRAMA_COLLECTION="Drama"
     public var SEASON_COLLECTION="Season"
     public var VIDEOMANAGEMENT_COLLECTION="ManageVideo"
+    public var ADMIN_COLLECTION="Admin"
 
 
 

@@ -3,19 +3,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#414143">
-    <TextView
-        android:id="@+id/dramas"
+
+
+    <LinearLayout
+        android:id="@+id/laychoice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Users Management"
-        android:gravity="center"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:layout_marginVertical="17dp"/>
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:id="@+id/user"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="User"
+            android:paddingVertical="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginVertical="17dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/admin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Admin"
+            android:paddingVertical="10dp"
+
+            android:textStyle="bold"
+        android:gravity="end"
+            android:textColor="@color/white"
+            android:layout_marginVertical="17dp"/>
+    </LinearLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/dramas"
+        android:layout_below="@+id/laychoice"
         android:layout_width="match_parent"
         android:layout_margin="10dp"
         android:layout_height="match_parent"

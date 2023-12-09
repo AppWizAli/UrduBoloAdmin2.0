@@ -2,12 +2,14 @@ package com.admin.Data
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.admin.Constants
+import com.admin.Models.Admin
 import com.admin.Models.ModelDrama
 import com.admin.Models.ModelSeason
 import com.admin.Models.ModelUser
@@ -36,6 +38,7 @@ class Repo(var context: Context) {
     private var VideoCollection = db.collection(constants.VIDEO_COLLECTION)
     private var UserCollection = db.collection(constants.USER_COLLECTION)
     private var BannerCollection = db.collection(constants.BANNER_COLLECTION)
+    private var AdminCollection = db.collection(constants.ADMIN_COLLECTION)
     private var DramaCollection = db.collection(constants.DRAMA_COLLECTION)
     private var SeasonCollection = db.collection(constants.SEASON_COLLECTION)
     private var VideoManagementCollection = db.collection(constants.VIDEOMANAGEMENT_COLLECTION)
@@ -86,6 +89,20 @@ class Repo(var context: Context) {
         return result
     }
 
+    suspend fun updateDrama(modelDrama: ModelDrama):LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        DramaCollection.document(modelDrama.docId).set(modelDrama)
+            .addOnSuccessListener {
+                result.value=true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
 
     suspend fun getDramaList(): Task<QuerySnapshot> {
         return DramaCollection.get()
@@ -102,6 +119,84 @@ class Repo(var context: Context) {
     }
     suspend fun getUserList(): Task<QuerySnapshot> {
         return UserCollection.get()
+    }
+    suspend fun addAdmin(modelUser: Admin): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+
+        try {
+            val documentReference = AdminCollection.add(modelUser).await()
+            modelUser.docId = documentReference.id
+
+            AdminCollection.document(documentReference.id).set(modelUser).await()
+            result.value = true
+        } catch (e: Exception) {
+            result.value = false
+        }
+
+        return result
+    }
+
+    suspend fun updateAdmin(modelDrama: Admin):LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        AdminCollection.document(modelDrama.docId).set(modelDrama)
+            .addOnSuccessListener {
+                result.value=true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+    }    suspend fun updateUser(modelDrama: ModelUser):LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        UserCollection.document(modelDrama.userId).set(modelDrama)
+            .addOnSuccessListener {
+                result.value=true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+    fun deletAdmin(modelSeason: Admin) :LiveData<Boolean>{
+      //  Toast.makeText(context, modelSeason.docId, Toast.LENGTH_SHORT).show()
+        val result = MutableLiveData<Boolean>()
+        AdminCollection.document(modelSeason.docId).delete()
+            .addOnSuccessListener {
+                result.value=true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+    fun deleteUser(modelSeason: ModelUser) :LiveData<Boolean>{
+      //  Toast.makeText(context, modelSeason.docId, Toast.LENGTH_SHORT).show()
+        val result = MutableLiveData<Boolean>()
+        UserCollection.document(modelSeason.userId).delete()
+            .addOnSuccessListener {
+                result.value=true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+
+    suspend fun getAdminList(): Task<QuerySnapshot> {
+        return AdminCollection.get()
+    }
+    suspend fun getAdmin(admin: String): Task<QuerySnapshot> {
+        return AdminCollection.whereEqualTo("email",admin).get()
     }
 
 
@@ -171,11 +266,73 @@ class Repo(var context: Context) {
     }
 
 
+fun deleteSeason(modelSeason: ModelSeason) :LiveData<Boolean>{
+        val result = MutableLiveData<Boolean>()
+        SeasonCollection.document(modelSeason.docId).delete()
+            .addOnSuccessListener {
+                result.value=true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+    fun deleteDrama(modelSeason: ModelDrama) :LiveData<Boolean>{
+        val result = MutableLiveData<Boolean>()
+        DramaCollection.document(modelSeason.docId).delete()
+            .addOnSuccessListener {
+                result.value=true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+    fun deleteVideo(modelSeason: ModelVideo) :LiveData<Boolean>{
+        val result = MutableLiveData<Boolean>()
+        VideoCollection.document(modelSeason.docId).delete()
+            .addOnSuccessListener {
+                result.value=true
+                // Deletion successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
 
-    suspend fun updateSeason(modelSeason: ModelSeason)
-    {
+    suspend fun updateSeason(modelDrama: ModelSeason):LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        SeasonCollection.document(modelDrama.docId).set(modelDrama)
+            .addOnSuccessListener {
+                result.value=true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
 
-        SeasonCollection.document(modelSeason.docId).set(modelSeason)
+                // Handle failure scenarios if needed
+            }
+        return result
+    }
+    suspend fun UpdateVideo(modelDrama: ModelVideo):LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        VideoCollection.document(modelDrama.docId).set(modelDrama)
+            .addOnSuccessListener {
+                result.value=true
+                // Update successful, handle any success cases if needed
+            }
+            .addOnFailureListener {
+                result.value=false
+
+                // Handle failure scenarios if needed
+            }
+        return result
     }
 
     suspend fun getSeasonbyId(type:String):Task<DocumentSnapshot>

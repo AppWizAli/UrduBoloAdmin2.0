@@ -42,6 +42,7 @@ itemBinding.dramaName.text=modelDrama.dramaName
 
             itemBinding.containerDrama.setOnClickListener{ listener.onItemClick(modelDrama)}
             itemBinding.edit.setOnClickListener{ listener.onEditClick(modelDrama)}
+            itemBinding.delete.setOnClickListener{ listener.onDeleteClick(modelDrama)}
 
             val dateTimeFormat = SimpleDateFormat("dd MMMM yyyy, h:mm a", Locale.getDefault())
             val formattedDateTime = dateTimeFormat.format(modelDrama.uploadedAt.toDate()) // Assuming timestamp is a Firebase Timestamp

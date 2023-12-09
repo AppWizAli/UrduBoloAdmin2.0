@@ -18,6 +18,7 @@ class AdapterUser (var activity:String, val data: List<ModelUser>, val listener:
         fun onupdateclick(modelUser: ModelUser)
         fun onDeleteClick(modelUser: ModelUser)
         fun onitemclick(modelUser: ModelUser)
+        fun onViewClick(modelUser: ModelUser)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ItemUserBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -33,6 +34,7 @@ class AdapterUser (var activity:String, val data: List<ModelUser>, val listener:
             itemBinding.removeUser.setOnClickListener{ listener.onDeleteClick(modelUser)}
             itemBinding.updateUser.setOnClickListener{ listener.onupdateclick(modelUser)}
             itemBinding.containeruser.setOnClickListener{ listener.onitemclick(modelUser)}
+            itemBinding.view.setOnClickListener{ listener.onViewClick(modelUser)}
 
         }
 

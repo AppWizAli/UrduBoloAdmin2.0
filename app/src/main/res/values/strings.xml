@@ -2,7 +2,11 @@
     <string name="app_name">Urdu Bolo Tv</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string-array name="roles_array">
+        <item>Owner</item>
+        <item>Editor</item>
+        <!-- Add more roles as needed -->
+    </string-array>
     <!--
     <string-array name="listofbanks">
         <item>Allied Bank Limited (ABL)</item>

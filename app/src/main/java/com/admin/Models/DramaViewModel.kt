@@ -22,6 +22,13 @@
         suspend fun addDrama(modelDrama: ModelDrama): LiveData<Boolean> {
             return repo.addDrama(modelDrama)
         }
+        suspend fun updateDrama(modelDrama: ModelDrama): LiveData<Boolean> {
+            return repo.updateDrama(modelDrama)
+        }
+        fun deleteDrama(modelSeason: ModelDrama): LiveData<Boolean>
+        {
+            return  repo.deleteDrama(modelSeason)
+        }
         suspend fun getDramalist(): Task<QuerySnapshot> {
 
             return  repo.getDramaList()

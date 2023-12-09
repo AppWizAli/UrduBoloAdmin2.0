@@ -41,6 +41,16 @@
             android:paddingStart="10dp"
             android:textColor="@color/white"
             android:textColorHint="@color/white" />
+        <EditText
+            android:id="@+id/videolink"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/etbghome"
+            android:hint="Paste Link..."
+            android:paddingStart="10dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
 
 
         <!-- Description EditText -->
@@ -154,12 +164,12 @@
                 android:layout_marginRight="10dp"
                 android:text="Thumbnail" />
 
-            <Button
+           <!-- <Button
                 android:id="@+id/btnChooseFile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="Choose File" />
+                android:text="Choose File" />-->
         </LinearLayout>
 
 

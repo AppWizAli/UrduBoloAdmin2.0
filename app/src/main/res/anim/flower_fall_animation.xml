@@ -1,0 +1,10 @@
+<!-- flower_fall_animation.xml -->
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate
+        android:fromYDelta="-100%p"
+        android:toYDelta="100%p"
+        android:duration="3000"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:repeatCount="infinite"
+        android:repeatMode="restart" />
+</set>

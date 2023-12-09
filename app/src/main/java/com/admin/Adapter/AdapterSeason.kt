@@ -35,14 +35,13 @@ class AdapterSeason (var activity: Context, val data: List<ModelSeason>, val lis
 
             itemBinding.dramaName.text=modelSeason.seasonNo
             itemBinding.totalepisodes.text=modelSeason.totalEpisode
-            itemBinding.episodeno.text=modelSeason.uploadedvideos
-            itemBinding.episodeno.text=modelSeason.uploadedepisodes
             Glide.with(activity).load(modelSeason.thumbnail).centerCrop().placeholder(R.drawable.placeholder).into(itemBinding.dramaImage)
             val dateTimeFormat = SimpleDateFormat("dd MMMM yyyy, h:mm a", Locale.getDefault())
             val formattedDateTime = dateTimeFormat.format(modelSeason.uploadedAt.toDate()) // Assuming timestamp is a Firebase Timestamp
             itemBinding.uploadedAt.text = formattedDateTime
             itemBinding.containerDrama.setOnClickListener{ listener.onItemClick(modelSeason)}
             itemBinding.edit.setOnClickListener{ listener.onEditClick(modelSeason)}
+            itemBinding.delete.setOnClickListener{ listener.onDeleteClick(modelSeason)}
 
         }
 

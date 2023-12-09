@@ -37,6 +37,15 @@
             android:textSize="10sp"
             android:text="Update"
             android:id="@+id/update_user"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View"
+            android:textStyle="bold"
+            android:layout_margin="8dp"
+            android:layout_gravity="center"
+            android:textColor="#FDC00F"
+            android:id="@+id/view"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,6 +67,7 @@
 
 
   <View
+      android:id="@+id/line"
       android:layout_width="match_parent"
       android:layout_height="1dp"
       android:background="@color/white"/>

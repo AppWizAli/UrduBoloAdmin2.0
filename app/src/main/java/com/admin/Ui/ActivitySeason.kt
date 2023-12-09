@@ -1,6 +1,7 @@
 package com.admin.Ui
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -65,6 +66,7 @@ class ActivitySeason : AppCompatActivity(),AdapterSeason.OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding=ActivitySeasonBinding.inflate(layoutInflater)
         setContentView(binding.root)
 constants=Constants()
@@ -81,7 +83,7 @@ modelDrama= ModelDrama()
         }
 
 
-
+        supportActionBar?.title = modelDrama.dramaName
 
 
 
@@ -104,13 +106,134 @@ setAdapter()
         intent.putExtra("season", modelSeason.toString()) // Serialize to JSON
         mContext.startActivity(intent)
     }
+    private fun showEditDialog(modelDrama: ModelSeason) {
+
+        val dialog = Dialog(mContext, R.style.FullWidthDialog)
+        dialog.setContentView(R.layout.dialog_season)
+
+        val seasonNo = dialog.findViewById<EditText>(R.id.seasonNo)
+        val totalSeason = dialog.findViewById<EditText>(R.id.toatalEpisodes)
+        val thumbnail = dialog.findViewById<Button>(R.id.btnUploadThumbnail)
+        val next = dialog.findViewById<Button>(R.id.btnNext)
+        val back = dialog.findViewById<ImageView>(R.id.back)
+
+        seasonNo.setText(modelDrama.seasonNo)
+        totalSeason.setText(modelDrama.totalEpisode)
+        thumbnail.setBackgroundColor(Color.parseColor("#FEC10F"))
+
+        dialog.setCancelable(false)
+
+        back.setOnClickListener { dialog.dismiss() }
+
+        thumbnail.setOnClickListener {
+            val pickImage =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+        }
+
+        next.setOnClickListener {
+            val seasonNo = seasonNo.text.toString()
+            val totalSeason = totalSeason.text.toString()
+
+            if (seasonNo.isEmpty() || totalSeason.isEmpty()|| imageURI.toString().isEmpty()) {
+                Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
+            } else {
+                utils.startLoadingAnimation()
+
+                modelDrama.seasonNo = seasonNo
+                modelDrama.totalEpisode = totalSeason
+
+                if (imageURI != null) {
+                    uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                        if (thumbnailUrl != null) {
+                            modelDrama.thumbnail = thumbnailUrl
+
+                            lifecycleScope.launch {
+
+                                seasonViewModel.updateSeason(modelDrama).observe(this@ActivitySeason) { success ->
+                                    if (success) {
+                                        utils.endLoadingAnimation()
+                                        Toast.makeText(
+                                            mContext,
+                                            "Drama updated successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        dialog.dismiss()
+                                        setAdapter()
+                                    } else {
+                                        utils.endLoadingAnimation()
+                                        Toast.makeText(
+                                            mContext,
+                                            "Failed to update the drama",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+
+                            }
+                        } else {
+                            utils.endLoadingAnimation()
+                            Toast.makeText(
+                                mContext,
+                                "Failed to upload the thumbnail image.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
 
     override fun onDeleteClick(modelSeason: ModelSeason) {
 
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Yes") { dialog, which ->
+performDeleteAction()
+            }
+            .setNegativeButton("No") { dialog, which ->
+                dialog.dismiss()
+            }
+
+        val dialog = builder.create()
+        dialog.show()
+
+
+
     }
 
+    private fun performDeleteAction() {
+        seasonViewModel.deleteSeason(modelSeason)
+            .observe(this@ActivitySeason) { success ->
+                if (success) {
+                    utils.endLoadingAnimation()
+                    Toast.makeText(
+                        mContext,
+                        "Season Deleted Succesfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+                    setAdapter()
+                } else {
+
+                    Toast.makeText(
+                        mContext,
+                        constants.SOMETHING_WENT_WRONG_MESSAGE,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+                }
+            }
+
+    }
     override fun onEditClick(modelSeason: ModelSeason) {
-        Toast.makeText(mContext, "Available Soon!!", Toast.LENGTH_SHORT).show()
+        showEditDialog(modelSeason)
     }
 
     private fun showDialogAddSeason() {

@@ -35,9 +35,19 @@ class Utils(val context: Context) {
         dialog.setCancelable(false)
 
         dialog.show()
+    } fun startCelebration() {
+        dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setContentView(R.layout.dialog_cellebration)
+        dialog.setCancelable(false)
+
+        dialog.show()
     }
 
     fun endLoadingAnimation() {
+        dialog.dismiss()
+    }    fun endcelebration() {
         dialog.dismiss()
     }
 

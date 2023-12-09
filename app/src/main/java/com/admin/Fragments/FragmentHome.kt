@@ -1,6 +1,7 @@
 package com.admin.Fragments
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -40,6 +41,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.FragmentHomeBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -51,7 +55,7 @@ class FragmentHome : Fragment(), AdapterDrama.OnItemClickListener {
     private val db = Firebase.firestore
     private var imageURI: Uri? = null
     private val IMAGE_PICKER_REQUEST_CODE = 200
-
+    private var deleteDialog: AlertDialog? = null
     private lateinit var modelDrama: ModelDrama
 
     private lateinit var thumnailview:ImageView
@@ -76,11 +80,13 @@ class FragmentHome : Fragment(), AdapterDrama.OnItemClickListener {
         modelDrama = ModelDrama()
         var modellist = ArrayList<ModelDrama>()
         constants = Constants()
-   setAdapter()
+
 sharedPrefManager=SharedPrefManager(mContext)
 
+
+        setAdapter()
         binding.floatingaction.setOnClickListener {
-            showDialogAddDrama()
+        showDialogAddDrama()
         }
 
 
@@ -180,12 +186,139 @@ sharedPrefManager=SharedPrefManager(mContext)
     }
 
     override fun onDeleteClick(modelDrama: ModelDrama) {
-
+        val builder = AlertDialog.Builder(mContext)
+        builder.setTitle("Confirmation")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Yes") { _, _ ->
+                performDeleteAction(modelDrama)
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+        deleteDialog = builder.create()
+        deleteDialog?.show()
     }
 
+    private fun performDeleteAction(modelDrama: ModelDrama) {
+        dramaViewModel.deleteDrama(modelDrama)
+            .observe(this@FragmentHome) { success ->
+                if (success) {
+                    utils.endLoadingAnimation()
+                    Toast.makeText(
+                        mContext,
+                        "Drama Deleted Successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                    setAdapter()
+                } else {
+                    Toast.makeText(
+                        mContext,
+                        constants.SOMETHING_WENT_WRONG_MESSAGE,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    deleteDialog?.dismiss() // Dismiss the dialog here
+                }
+            }
+    }
+
+    // Inside your Fragment lifecycle method (onCreateView or onViewCreated, etc.)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Other initialization code
+        deleteDialog = AlertDialog.Builder(mContext).create()
+    }
     override fun onEditClick(modelDrama: ModelDrama) {
-        Toast.makeText(mContext, "Available Soon!!", Toast.LENGTH_SHORT).show()
+      showEditDialog(modelDrama)
     }
+
+
+    private fun showEditDialog(modelDrama: ModelDrama) {
+
+        val dialog = Dialog(mContext, R.style.FullWidthDialog)
+        dialog.setContentView(R.layout.dialog_add_drama)
+
+        val dramaName = dialog.findViewById<EditText>(R.id.editTextDramaName)
+        val dramaNo = dialog.findViewById<EditText>(R.id.editTextDramaNo)
+        val totalSeason = dialog.findViewById<EditText>(R.id.editTextTotalSeason)
+        val thumbnail = dialog.findViewById<Button>(R.id.btnUploadThumbnail)
+        val next = dialog.findViewById<Button>(R.id.btnNext)
+        val back = dialog.findViewById<ImageView>(R.id.back)
+
+        dramaName.setText(modelDrama.dramaName)
+        dramaNo.setText(modelDrama.dramaNumber)
+        totalSeason.setText(modelDrama.totalSeason)
+        thumbnail.setBackgroundColor(Color.parseColor("#FEC10F"))
+
+        dialog.setCancelable(false)
+
+        back.setOnClickListener { dialog.dismiss() }
+
+        thumbnail.setOnClickListener {
+            val pickImage =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+        }
+
+        next.setOnClickListener {
+            val dramaNameText = dramaName.text.toString()
+            val dramaNoText = dramaNo.text.toString()
+            val totalSeasonText = totalSeason.text.toString()
+
+            if (dramaNoText.isEmpty() || totalSeasonText.isEmpty()|| imageURI.toString().isEmpty()) {
+                Toast.makeText(mContext, "Please Enter All fields", Toast.LENGTH_SHORT).show()
+            } else {
+                utils.startLoadingAnimation()
+
+                modelDrama.dramaName = dramaNameText
+                modelDrama.dramaNumber = dramaNoText
+                modelDrama.totalSeason = totalSeasonText
+
+                if (imageURI != null) {
+                    uploadThumbnailImage(imageURI!!) { thumbnailUrl ->
+                        if (thumbnailUrl != null) {
+                            modelDrama.thumbnail = thumbnailUrl
+
+                            lifecycleScope.launch {
+
+                                    dramaViewModel.updateDrama(modelDrama).observe(viewLifecycleOwner) { success ->
+                                        if (success) {
+                                            utils.endLoadingAnimation()
+                                            Toast.makeText(
+                                                mContext,
+                                                "Drama updated successfully",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            dialog.dismiss()
+                                            setAdapter()
+                                        } else {
+                                            utils.endLoadingAnimation()
+                                            Toast.makeText(
+                                                mContext,
+                                                "Failed to update the drama",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+
+                            }
+                        } else {
+                            utils.endLoadingAnimation()
+                            Toast.makeText(
+                                mContext,
+                                "Failed to upload the thumbnail image.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+
+
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

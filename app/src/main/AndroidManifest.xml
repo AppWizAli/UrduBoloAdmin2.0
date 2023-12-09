@@ -9,6 +9,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -21,11 +23,21 @@
         android:theme="@style/Base.Theme.UrduBoloTv"
         tools:targetApi="31">
         <activity
+            android:name="com.admin.Ui.ActivityUploadVideo"
+            android:exported="false" />
+        <activity
+            android:name="com.admin.Ui.ActivityCelebration"
+            android:exported="false" />
+        <activity
+            android:name="com.admin.Ui.ActivityLogin"
+            android:exported="false" />
+        <activity
             android:name="com.admin.Ui.ActivityAddVideo"
             android:exported="false" />
         <activity
             android:name="com.admin.Ui.ActivityPlayer"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name="com.admin.Ui.ActivitySplash"
             android:exported="true">
