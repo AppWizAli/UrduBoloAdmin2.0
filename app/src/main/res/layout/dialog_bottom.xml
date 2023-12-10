@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<View
+    android:layout_width="130dp"
+    android:layout_height="3dp"
+    android:layout_gravity="center"
+    android:padding="16dp"
+    android:layout_marginTop="20dp"
+    android:background="@color/primary"/>
+
+
+
+    <!-- RecyclerView or other content -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewCustomBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp" />
+
+    <!-- Add more views or components here as needed -->
+
+</LinearLayout>

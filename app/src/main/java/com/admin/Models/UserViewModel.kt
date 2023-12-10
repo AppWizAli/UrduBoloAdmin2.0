@@ -21,6 +21,8 @@ class UserViewModel(context: Application) : AndroidViewModel(context) {
 
     suspend fun addUser(modelUser: ModelUser): LiveData<Boolean> {
         return repo.addUser(modelUser)
+    }  suspend fun addGroup(modelUser: ModelGroup): LiveData<Boolean> {
+        return repo.addGroup(modelUser)
     }
     suspend fun addAdmin(modelUser: Admin): LiveData<Boolean> {
         return repo.addAdmin(modelUser)
@@ -31,15 +33,22 @@ class UserViewModel(context: Application) : AndroidViewModel(context) {
         return repo.updateAdmin(modelUser)
     } suspend fun updateUser(modelUser: ModelUser): LiveData<Boolean> {
         return repo.updateUser(modelUser)
+    }suspend fun updateGroup(modelUser: ModelGroup): LiveData<Boolean> {
+        return repo.updateGroup(modelUser)
     }
     suspend fun deletAdmin(modelUser: Admin): LiveData<Boolean> {
         return repo.deletAdmin(modelUser)
     }  suspend fun deleteUser(modelUser: ModelUser): LiveData<Boolean> {
         return repo.deleteUser(modelUser)
+    } suspend fun deleteGroup(modelUser: ModelGroup): LiveData<Boolean> {
+        return repo.deleteGroup(modelUser)
     }
     suspend fun getUserList(): Task<QuerySnapshot> {
 
         return  repo.getUserList()
+    }  suspend fun getGroupList(): Task<QuerySnapshot> {
+
+        return  repo.getGroupList()
     }
     suspend fun getAdminList(): Task<QuerySnapshot> {
 

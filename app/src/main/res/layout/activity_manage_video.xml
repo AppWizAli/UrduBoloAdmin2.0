@@ -4,47 +4,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#414143">
 
-    <TextView
-        android:id="@+id/dramas"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cd2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please select the video that you want to make public for this user "
-  android:textSize="18sp"
-        android:layout_marginStart="5dp"
-        android:textColor="@color/white"
-       android:layout_marginTop="10dp" />
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        app:cardCornerRadius="15dp"
-        android:id="@+id/laysearchview"
-        android:layout_below="@+id/dramas"
-        android:backgroundTint="#FDC00F"
-        android:layout_margin="10dp">
-        <androidx.appcompat.widget.SearchView
+        app:cardElevation="6dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="10dp"
+        app:cardBackgroundColor="@color/secondary_m"
+        android:layout_marginHorizontal="30dp">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-           android:background="@drawable/searchbg"
-            android:layout_gravity="center"
-         android:layout_margin="3dp"
-            android:id="@+id/searchview"/>
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/secondary_m"
+            app:tabGravity="fill"
+            app:tabInlineLabel="true"
+            android:layout_margin="7dp"
+            app:tabIndicator="@drawable/tab_indicator"
+            app:tabIndicatorColor="@color/white"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorGravity="stretch"
+            app:tabIndicatorHeight="54dp"
+            app:tabMode="fixed"
+            app:tabTextColor="@color/black_m"
+
+            />
+
     </androidx.cardview.widget.CardView>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvvideos"
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/laysearchview"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="55dp" />
-<Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Next"
-    android:id="@+id/next"
-    android:layout_marginBottom="10dp"
-    android:layout_marginHorizontal="20dp"
-    android:layout_alignParentBottom="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="-3dp"
+        android:layout_marginBottom="1dp"
+        android:paddingTop="40dp">
+
+
+    </androidx.viewpager2.widget.ViewPager2>
 
 </RelativeLayout>

@@ -354,6 +354,8 @@ sharedPrefManager=SharedPrefManager(mContext)
                     if(list.isEmpty())
                     {
                         binding.nothing.visibility=View.VISIBLE
+                        binding.rvdrama.layoutManager = LinearLayoutManager(mContext)
+                        binding.rvdrama.adapter = AdapterDrama(mContext, sortedList, this@FragmentHome)
                     }
                     else
                     {

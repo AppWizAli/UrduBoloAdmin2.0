@@ -1,0 +1,78 @@
+<!-- res/layout/item_group.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+android:orientation="vertical"
+    android:id="@+id/contanier"
+    android:padding="16dp">
+
+
+    <!-- Vertical LinearLayout for Group Name and Description -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Group Name -->
+        <TextView
+            android:id="@+id/textViewGroupName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:text="Very Long Group Name with Multiple Lines"
+            android:maxLines="1" />
+
+        <!-- Group Description -->
+        <TextView
+            android:id="@+id/textViewGroupDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:text="Long Description that Extends to Multiple Lines for Better Adaptability in UI"
+            android:maxLines="1"/>
+
+        <!-- Other Views or Widgets as needed for the group item -->
+
+    </LinearLayout>
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:orientation="horizontal">
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/baseline_add_24"
+    android:id="@+id/addMember"
+    app:tint="@color/primary" />
+    <ImageView
+        android:id="@+id/imageViewEdit"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="10dp"
+
+        android:src="@drawable/baseline_mode_edit_24"
+        android:contentDescription="Edit Icon"/>
+
+    <!-- Delete Icon -->
+    <ImageView
+        android:id="@+id/imageViewDelete"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+
+        android:src="@drawable/baseline_delete_24"
+        android:contentDescription="Delete Icon"
+        app:tint="@color/red_m" />
+
+</LinearLayout>
+
+
+
+
+</LinearLayout>

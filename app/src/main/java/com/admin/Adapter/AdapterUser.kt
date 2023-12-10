@@ -8,6 +8,8 @@ import com.admin.Models.ModelDrama
 import com.admin.Models.ModelUser
 import com.urduboltv.admin.databinding.ItemDramaBinding
 import com.urduboltv.admin.databinding.ItemUserBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AdapterUser (var activity:String, val data: List<ModelUser>, val listener: OnItemClickListener) : RecyclerView.Adapter<AdapterUser.ViewHolder>(){
 
@@ -28,14 +30,14 @@ class AdapterUser (var activity:String, val data: List<ModelUser>, val listener:
     inner class ViewHolder(val itemBinding: ItemUserBinding) : RecyclerView.ViewHolder(itemBinding.root){
 
         fun bind(modelUser: ModelUser) {
-
             itemBinding.userName.text=modelUser.name
-
             itemBinding.removeUser.setOnClickListener{ listener.onDeleteClick(modelUser)}
             itemBinding.updateUser.setOnClickListener{ listener.onupdateclick(modelUser)}
             itemBinding.containeruser.setOnClickListener{ listener.onitemclick(modelUser)}
             itemBinding.view.setOnClickListener{ listener.onViewClick(modelUser)}
-
+            val dateTimeFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val formattedDateTime = dateTimeFormat.format(modelUser.createdAt .toDate()) // Assuming timestamp is a Firebase Timestamp
+            itemBinding.uploadedAt.text = formattedDateTime
         }
 
     }

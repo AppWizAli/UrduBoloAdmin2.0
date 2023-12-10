@@ -30,10 +30,10 @@ data class ModelVideo @JvmOverloads constructor(
     var category: String = "", // Category of the video (e.g., Comedy, Drama, Music)
     var duration: String = "", // Duration of the video in HH:MM:SS format
     var resolution: String = "", // Video resolution (e.g., 1920x1080)
-    var language: String = "", // Language of the video
     var location: String = "", // Geographical location of the video recording
     var views: String = "0", // Number of views
     var favorites: String = "0",
+    var users_Id: List<String> = emptyList()
 )
 {
 

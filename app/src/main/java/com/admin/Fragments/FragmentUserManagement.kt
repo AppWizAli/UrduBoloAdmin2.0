@@ -1,28 +1,44 @@
 package com.admin.Fragments
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.admin.Adapter.AdapterUser
-import com.admin.Adapter.UserViewPagerAdapter
 import com.admin.Constants
 import com.admin.Data.SharedPrefManager
 import com.admin.Models.ModelUser
 import com.admin.Models.UserViewModel
 import com.admin.Models.VideoViewModel
+import com.admin.Ui.ActivityManageVideo
 import com.admin.Utils
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.FragmentUserBinding
+import com.urduboltv.admin.databinding.FragmentUserManagementBinding
+import kotlinx.coroutines.launch
 
-class FragmentUser : Fragment() {
-    private var _binding: FragmentUserBinding? = null
+class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
+
+    private var _binding: FragmentUserManagementBinding? = null
 
     private val videoViewModel: VideoViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
@@ -42,87 +58,47 @@ class FragmentUser : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentUserBinding.inflate(inflater, container, false)
+        _binding = FragmentUserManagementBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         mContext = requireContext()
         utils = Utils(mContext)
-constants=Constants()
+        constants=Constants()
         sharedPrefManager=SharedPrefManager(mContext)
-/*        setUserAdapter()
+
+
+        setUserAdapter()
 
 
         binding.floatingaction.setOnClickListener {
-           showChoiceDialog()
-        }*/
-/*
-
-binding.admin.setOnClickListener(
-)
-{
-    setAdminAdapter()
-}
-binding.user.setOnClickListener(
-)
-{
-    setUserAdapter()
-}
-*/
-
-        setupViewPager()
-        setupTabLayout()
+            showChoiceDialog()
+        }
 
         return root
     }
 
-    private fun setupTabLayout() {
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            if(position==0) tab.text ="User"
-            else if(position==1) tab.text="Admin"
-            else if(position==2) tab.text="Groups"
-        }.attach()
+    @SuppressLint("SuspiciousIndentation")
+    private  fun showChoiceDialog()
+    {
+
+
+        val builder = AlertDialog.Builder(mContext)
+
+            builder.setTitle("Select Option")
+                .setPositiveButton("Add User") { dialog, which ->
+                    showDialogAdduser()
+                }
+                .setNegativeButton("Cancel") { dialog, which ->
+                    dialog.dismiss()
+
+        }
+
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
-    private fun setupViewPager() {
-        val adapter = UserViewPagerAdapter(requireActivity(), 3)
-        binding.viewPager.adapter = adapter
-    }
-
-/*
-
-
-private  fun showChoiceDialog()
-{
-
-
-    val builder = AlertDialog.Builder(mContext)
-if(sharedPrefManager.getAdmin().role.equals("Owner"))
-{
-    builder.setTitle("Select Option")
-        .setPositiveButton("User") { dialog, which ->
-            showDialogAdduser()
-        }
-        .setNegativeButton("Admin") { dialog, which ->
-            showDialogAddAdmin()
-        }
-}
-    else
-{
-    builder.setTitle("Select Option")
-        .setPositiveButton("User") { dialog, which ->
-            showDialogAdduser()
-        }
-        .setNegativeButton("Cancel") { dialog, which ->
-        dialog.dismiss()
-        }
-}
-
-
-    val dialog = builder.create()
-    dialog.show()
-}
-
-    private fun showDialogAddAdmin() {
+/*    private fun showDialogAddAdmin() {
         val dialog = Dialog(mContext, R.style.FullWidthDialog)
         dialog.setContentView(R.layout.dialog_admin)
 
@@ -217,7 +193,7 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
                     }
                 }
         }
-    }
+    }*/
     private fun showDialogAdduser() {
         dialog = Dialog(mContext, R.style.FullWidthDialog)
         dialog.setContentView(R.layout.dialog_add_user)
@@ -298,7 +274,7 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
         lifecycleScope.launch {
             utils.startLoadingAnimation()
             userViewModel.updateUser(modelUser)
-                .observe(this@FragmentUser) { task ->
+                .observe(this@FragmentUserManagement) { task ->
                     dialog.dismiss() // Dismiss the dialog before showing the result
                     if (task) {
                         utils.endLoadingAnimation()
@@ -335,13 +311,13 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
                 lifecycleScope.launch {
                     utils.startLoadingAnimation()
                     userViewModel.deleteUser(modelUser)
-                        .observe(this@FragmentUser)
+                        .observe(this@FragmentUserManagement)
                         { task->
                             if(task)
                             {
                                 utils.endLoadingAnimation()
                                 Toast.makeText(mContext, "User deleted Successfully", Toast.LENGTH_SHORT).show()
-                               setUserAdapter()
+                                setUserAdapter()
                             }
                             else
                             {
@@ -385,26 +361,26 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
 
     private fun addUser(modelUser: ModelUser) {
         utils.startLoadingAnimation()
-    lifecycleScope.launch {
-     userViewModel.addUser(modelUser).observe(viewLifecycleOwner)
-     {task->
-         if(task)
-         {
+        lifecycleScope.launch {
+            userViewModel.addUser(modelUser).observe(viewLifecycleOwner)
+            {task->
+                if(task)
+                {
 
-             dialog.dismiss()
-             utils.endLoadingAnimation()
-             setUserAdapter()
-             Toast.makeText(mContext, constants.USER_ADDED_SUCCESSFULLY, Toast.LENGTH_SHORT).show()
-         }
-         else
-         {
-             dialog.dismiss()
-             utils.endLoadingAnimation()
-             setUserAdapter()
-             Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
-         }
-     }
-    }
+                    dialog.dismiss()
+                    utils.endLoadingAnimation()
+                    setUserAdapter()
+                    Toast.makeText(mContext, constants.USER_ADDED_SUCCESSFULLY, Toast.LENGTH_SHORT).show()
+                }
+                else
+                {
+                    dialog.dismiss()
+                    utils.endLoadingAnimation()
+                    setUserAdapter()
+                    Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
 
@@ -429,7 +405,7 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
 
                         }
                         binding.rvusers.layoutManager = LinearLayoutManager(mContext)
-                        binding.rvusers.adapter= AdapterUser("User",list,this@FragmentUser)
+                        binding.rvusers.adapter= AdapterUser("User",list,this@FragmentUserManagement)
 
                     } else
                     {
@@ -458,7 +434,7 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
 
 
     }
-    fun setAdminAdapter() {
+/*    fun setAdminAdapter() {
         utils.startLoadingAnimation()
         var list= ArrayList<Admin> ()
         lifecycleScope.launch {
@@ -501,10 +477,10 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
 
 
 
-    }
+    }*/
 
     // Assuming you have a function to handle item clicks in your admin list
-    override fun onAdminupdateclick(modelUser: Admin) {
+/*    override fun onAdminupdateclick(modelUser: Admin) {
         // Show a dialog to display and potentially edit the admin details
         val dialog = Dialog(mContext, R.style.FullWidthDialog)
         dialog.setContentView(R.layout.dialog_admin) // Replace with your dialog layout
@@ -583,27 +559,27 @@ if(sharedPrefManager.getAdmin().role.equals("Owner"))
     override fun onAdminDeleteClick(modelUser: Admin) {
         lifecycleScope.launch {
             utils.startLoadingAnimation()
-userViewModel.deletAdmin(modelUser)
-    .observe(this@FragmentUser)
-    {
-        task->
-        if(task)
-        {
-            utils.endLoadingAnimation()
-            Toast.makeText(mContext, "Admin deleted Successfully", Toast.LENGTH_SHORT).show()
-            setAdminAdapter()
-        }
-        else
-        {
-            utils.endLoadingAnimation()
-            Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
-        }
-    }
+            userViewModel.deletAdmin(modelUser)
+                .observe(this@FragmentUser)
+                {
+                        task->
+                    if(task)
+                    {
+                        utils.endLoadingAnimation()
+                        Toast.makeText(mContext, "Admin deleted Successfully", Toast.LENGTH_SHORT).show()
+                        setAdminAdapter()
+                    }
+                    else
+                    {
+                        utils.endLoadingAnimation()
+                        Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
     }
 
     override fun onAdminitemclick(modelUser: Admin) {
-       var dialogFA=Dialog(requireContext())
+        var dialogFA=Dialog(requireContext())
         dialogFA.setContentView(R.layout.dialogdetail)
         dialogFA.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialogFA.setCancelable(true)
@@ -613,7 +589,5 @@ userViewModel.deletAdmin(modelUser)
         dialogFA.findViewById<TextView>(R.id.tvaddress).text = modelUser.password
 
         dialogFA.show()
-    }
-*/
-
+    }*/
 }

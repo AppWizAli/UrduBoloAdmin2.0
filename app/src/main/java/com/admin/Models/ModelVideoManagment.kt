@@ -6,7 +6,9 @@ class ModelVideoManagment
     (
     var videoId:String="",
     var userid:String="" ,
-    var seasonId:String="")
+    var seasonId:String="",
+    var status:String=""
+            )
 {
     override fun toString(): String {
         val gson = Gson()

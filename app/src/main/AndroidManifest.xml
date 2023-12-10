@@ -23,7 +23,7 @@
         android:theme="@style/Base.Theme.UrduBoloTv"
         tools:targetApi="31">
         <activity
-            android:name="com.admin.Ui.ActivityUploadVideo"
+            android:name="com.admin.Ui.ActivityGroupMembers"
             android:exported="false" />
         <activity
             android:name="com.admin.Ui.ActivityCelebration"

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#414143"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/back"
+            android:src="@drawable/baseline_arrow_back_ios_new_24"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please! Provide the following details to create a account!!"
+            android:textColor="@color/white"
+            android:layout_marginVertical="17dp"/>
+
+
+        <!-- Drama No EditText -->
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/etbghome"
+            android:layout_marginBottom="15dp"
+            android:textColor="@color/white"
+            android:hint="Group Name"
+            android:textColorHint="@color/white"
+            android:id="@+id/groupname"
+            android:paddingStart="10dp" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/etbghome"
+            android:layout_marginBottom="15dp"
+            android:textColor="@color/white"
+            android:hint="Group Description"
+            android:textColorHint="@color/white"
+            android:id="@+id/description"
+            android:paddingStart="10dp" />
+
+
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:id="@+id/btnNext" />
+    </LinearLayout>
+
+
+
+</LinearLayout>

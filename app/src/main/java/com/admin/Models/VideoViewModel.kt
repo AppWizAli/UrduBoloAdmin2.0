@@ -20,27 +20,31 @@ class VideoViewModel(context: Application) : AndroidViewModel(context) {
     suspend fun addVideo(modelVideo: ModelVideo): LiveData<Boolean> {
         return repo.addVideo(modelVideo)
     }
-    fun deleteVideo(modelSeason: ModelVideo): LiveData<Boolean>
-    {
-        return  repo.deleteVideo(modelSeason)
-    }
-    suspend fun UpdateVideo(modelSeason: ModelVideo): LiveData<Boolean>
-    {
-        return  repo.UpdateVideo(modelSeason)
+
+    fun deleteVideo(modelSeason: ModelVideo): LiveData<Boolean> {
+        return repo.deleteVideo(modelSeason)
     }
 
-    suspend fun getVideoList(docId:String): Task<QuerySnapshot> {
-
-        return  repo.getVideoList(docId)
+    suspend fun UpdateVideo(modelSeason: ModelVideo): LiveData<Boolean> {
+        return repo.UpdateVideo(modelSeason)
     }
 
-    suspend fun getPrivateVideoList(): Task<QuerySnapshot> {
+    suspend fun getVideoList(docId: String): Task<QuerySnapshot> {
 
-        return repo.getPrivateVideoList()
+        return repo.getVideoList(docId)
     }
 
-    suspend fun assignPrivateVidoes(videoManagements: ArrayList<ModelVideoManagment>): LiveData<Boolean>
-    {
+    suspend fun getUnAssignedPrivateVideo(id: String): Task<QuerySnapshot> {
+
+        return repo.getUnAssignedPrivateVideo(id)
+    }
+
+    suspend fun getAssignedVideo(id: String): Task<QuerySnapshot> {
+
+        return repo.getAssignedVideo(id)
+    }
+
+    suspend fun assignPrivateVidoes(videoManagements: ArrayList<ModelVideoManagment>): LiveData<Boolean> {
         return repo.assignPrivateVideos(videoManagements)
     }
 

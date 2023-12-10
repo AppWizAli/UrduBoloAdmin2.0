@@ -4,6 +4,7 @@ class Constants {
     public var VIDEO_COLLECTION="Videos"
     public var USER_COLLECTION="Users"
     public var BANNER_COLLECTION="Banner"
+    public var GROUP_COLLECTION="Groups"
     public var DRAMA_COLLECTION="Drama"
     public var SEASON_COLLECTION="Season"
     public var VIDEOMANAGEMENT_COLLECTION="ManageVideo"

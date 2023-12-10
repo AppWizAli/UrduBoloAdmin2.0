@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -36,30 +37,19 @@ import com.urduboltv.admin.databinding.FragmentDashboardBinding
 import com.urduboltv.admin.databinding.FragmentHomeBinding
 import java.util.*
 
-class FragmentDashboard : Fragment() {
+class FragmentDashboard : Fragment() ,Adapterbanner.OnItemClickListener{
     private var _binding: FragmentDashboardBinding? = null
 
-    private val videoViewModel: VideoViewModel by viewModels()
-    private val dramaViewModel: DramaViewModel by viewModels()
-    private val db = Firebase.firestore
-    private var imageURI: Uri? = null
-    private val IMAGE_PICKER_REQUEST_CODE = 200
-    private var deleteDialog: AlertDialog? = null
-    private lateinit var modelDrama: ModelDrama
-
-    private lateinit var thumnailview: ImageView
-    private lateinit var adapter: AdapterDrama
-
+    private lateinit var imageAdapter: Adapterbanner
+    private val imageUriList: MutableList<Uri> = mutableListOf()
+    private var currentItemPosition = 0
+    private val IMAGE_CHANGE_INTERVAL = 7000 // 3 seconds
     private lateinit var utils: Utils
     private lateinit var mContext: Context
     private lateinit var constants: Constants
-    private lateinit var user: ModelUser
-    private lateinit var sharedPrefManager: SharedPrefManager
-    private lateinit var dialog: Dialog
+
     private val binding get() = _binding!!
-    private val VIDEO_PICKER_REQUEST_CODE = 300
-    private lateinit var videoAdapter: Adapterbanner
-    private val videosList: MutableList<Uri> = mutableListOf()
+    private val VIDEO_PICKER_REQUEST_CODE = 6000
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,105 +57,53 @@ class FragmentDashboard : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-
         mContext = requireContext()
         utils = Utils(mContext)
-        modelDrama = ModelDrama()
         var modellist = ArrayList<ModelDrama>()
         constants = Constants()
 
         binding.rv.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
+        // Add sample image URIs (Replace with your actual URIs)
+        imageUriList.add(Uri.parse("https://firebasestorage.googleapis.com/v0/b/urdubolotv-c88cd.appspot.com/o/thumbnails%2F1702222629581_1000035865?alt=media&token=ada88887-a6e2-4a0f-b292-26b6113b6acd"))
+  imageUriList.add(Uri.parse("https://firebasestorage.googleapis.com/v0/b/urdubolotv-c88cd.appspot.com/o/thumbnails%2F1702222629581_1000035865?alt=media&token=ada88887-a6e2-4a0f-b292-26b6113b6acd"))
+  imageUriList.add(Uri.parse("https://firebasestorage.googleapis.com/v0/b/urdubolotv-c88cd.appspot.com/o/thumbnails%2F1702222629581_1000035865?alt=media&token=ada88887-a6e2-4a0f-b292-26b6113b6acd"))
+  imageUriList.add(Uri.parse("https://firebasestorage.googleapis.com/v0/b/urdubolotv-c88cd.appspot.com/o/thumbnails%2F1702222629581_1000035865?alt=media&token=ada88887-a6e2-4a0f-b292-26b6113b6acd"))
+   // Add more URIs as needed
 
-        videosList.add(Uri.parse("https://firebasestorage.googleapis.com/v0/b/urdubolotv-c88cd.appspot.com/o/videos%2F1701793108145_1000032992?alt=media&token=7a182a44-2027-4b20-99c4-1b5b222266e5"))
-        videosList.add(Uri.parse("https://firebasestorage.googleapis.com/v0/b/urdubolotv-c88cd.appspot.com/o/videos%2F1701793108145_1000032992?alt=media&token=7a182a44-2027-4b20-99c4-1b5b222266e5"))
-        // Add more videos as needed
+        val recyclerView = binding.rv
+        imageAdapter = Adapterbanner(requireContext(), imageUriList, recyclerView,this@FragmentDashboard)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.adapter = imageAdapter
 
-        videoAdapter = Adapterbanner(requireContext(), videosList)
-        binding.rv.adapter = videoAdapter
-        sharedPrefManager=SharedPrefManager(mContext)
-/*binding.floatingaction.setOnClickListener()
-{
-    showVideoPicker()
-}*/
-
-
-
+        startImageSlideshow()
 
         return root
     }
-    private fun showVideoPicker() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, VIDEO_PICKER_REQUEST_CODE)
-    }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == VIDEO_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val videoUri = data?.data
-            videoUri?.let { uri ->
-                // Video selected, now upload to Firebase Storage and save URL in Firestore
-                uploadVideoToFirebaseStorage(uri)
+    private fun startImageSlideshow() {
+        val handler = Handler()
+        val runnable = Runnable {
+            currentItemPosition++
+            if (currentItemPosition >= imageUriList.size) {
+                currentItemPosition = 0
             }
+            binding.rv.smoothScrollToPosition(currentItemPosition)
+            startImageSlideshow()
         }
+        handler.postDelayed(runnable, IMAGE_CHANGE_INTERVAL.toLong())
     }
 
-
-    private fun uploadVideoToFirebaseStorage(videoUri: Uri) {
-
-        val storageRef = Firebase.storage.reference.child("videos/${System.currentTimeMillis()}_${videoUri.lastPathSegment}")
-
-        // Start the upload
-        val uploadTask = storageRef.putFile(videoUri)
-
-        uploadTask.addOnSuccessListener { taskSnapshot ->
-            // Get the download URL from the completed upload task
-            taskSnapshot.storage.downloadUrl.addOnCompleteListener { downloadUrlTask ->
-                if (downloadUrlTask.isSuccessful) {
-                    val downloadUrl = downloadUrlTask.result.toString()
-
-                    // Save the download URL to Firestore
-                    saveVideoUrlToFirestore(downloadUrl)
-                } else {
-                    // Handle failure to get the download URL
-                    Toast.makeText(mContext, "Video Uploaded succesfulluy", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }.addOnFailureListener { exception ->
-            // Handle unsuccessful upload
-            Toast.makeText(mContext, "Failed", Toast.LENGTH_SHORT).show()
-
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        // Remove callbacks when fragment is destroyed
+        imageAdapter.handler.removeCallbacksAndMessages(null)
     }
 
-    private fun saveVideoUrlToFirestore(videoUrl: String) {
-        // Here you need to save the videoUrl in your Firestore collection
-        // For example, if you have a 'banner' collection:
-        utils.startLoadingAnimation()
-        val bannerCollectionRef = Firebase.firestore.collection("banner")
-
-        // Create a new document with a unique auto-generated ID
-        val newDocumentRef = bannerCollectionRef.document()
-
-        // Set the 'videoUrl' field in the new document
-        newDocumentRef
-            .set(mapOf("videoUrl" to videoUrl))
-            .addOnSuccessListener {
-                utils.endLoadingAnimation()
-                // New document created successfully in Firestore
-                Toast.makeText(mContext, "Video URL saved in Firestore", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { exception ->
-                utils.endLoadingAnimation()
-                // Handle failures while creating the new document
-                Toast.makeText(mContext, "Failed to save video URL: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
+    override fun onDeleteClick(modelUser: String) {
+        Toast.makeText(mContext, "Available Soon!!", Toast.LENGTH_SHORT).show()
     }
-
-
 
 }
 

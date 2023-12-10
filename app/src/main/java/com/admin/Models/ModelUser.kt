@@ -15,6 +15,7 @@ data class ModelUser @JvmOverloads constructor(
     var profile: String = "",
     var loggedInNumber: String = "",
     var location: String = "",
+    var status: String = "",
     val createdAt: Timestamp = Timestamp.now() // Creation timestamp
 
 )
