@@ -115,7 +115,9 @@ class Repo(var context: Context) {
         return VideoCollection.whereEqualTo(constants.SEASON_ID,docId).get()
     }
     suspend fun getPrivateVideoList(): Task<QuerySnapshot> {
-        return VideoCollection.whereEqualTo(constants.PRIVACY,constants.VIDEO_PRIVACY_PRIVATE).get()
+        return VideoCollection.whereEqualTo(constants.PRIVACY,constants.VIDEO_PRIVACY_PRIVATE).whereEqualTo("user_Id","").get()
+    }    suspend fun getAssignedVideo(Id:String): Task<QuerySnapshot> {
+        return VideoCollection.whereEqualTo(constants.PRIVACY,constants.VIDEO_PRIVACY_PRIVATE).whereEqualTo("user_Id",Id).get()
     }
     suspend fun getUserList(): Task<QuerySnapshot> {
         return UserCollection.get()

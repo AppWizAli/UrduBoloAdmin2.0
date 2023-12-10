@@ -13,6 +13,8 @@ import com.admin.Models.ModelDrama
 import com.admin.Models.ModelUser
 import com.urduboltv.admin.databinding.ItemDramaBinding
 import com.urduboltv.admin.databinding.ItemUserBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AdapterAdmin (var activity:Context, val data: List<Admin>, val listener: OnItemClickListener) : RecyclerView.Adapter<AdapterAdmin.ViewHolder>(){
 var sharedPrefManager=SharedPrefManager(activity)
@@ -34,17 +36,15 @@ var sharedPrefManager=SharedPrefManager(activity)
 
         fun bind(modelUser: Admin) {
 
-            if(sharedPrefManager.getAdmin().role.equals("Editor"))
-            {  itemBinding.updateUser.visibility=View.GONE
-                itemBinding.removeUser.visibility=View.GONE
                 itemBinding.view.visibility=View.GONE
-                itemBinding.uploadedAt.visibility=View.GONE
-            }
+
             itemBinding.userName.text=modelUser.name
             itemBinding.removeUser.setOnClickListener{ listener.onAdminDeleteClick(modelUser)}
             itemBinding.updateUser.setOnClickListener{ listener.onAdminupdateclick(modelUser)}
             itemBinding.containeruser.setOnClickListener{ listener.onAdminitemclick(modelUser)}
-
+            val dateTimeFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val formattedDateTime = dateTimeFormat.format(modelUser.createdAt .toDate()) // Assuming timestamp is a Firebase Timestamp
+            itemBinding.uploadedAt.text = formattedDateTime
         }
 
     }

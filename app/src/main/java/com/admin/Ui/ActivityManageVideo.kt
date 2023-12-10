@@ -2,114 +2,81 @@ package com.admin.Ui
 
 import android.app.Dialog
 import android.content.Context
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.SyncStateContract
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.admin.Adapter.AdapterManageVideo
-import com.admin.Adapter.AdapterSeason
-import com.admin.Adapter.VideoAdapter
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
+import com.admin.Adapter.AdapterUser
+import com.admin.Adapter.UserViewPagerAdapter
+import com.admin.Adapter.VideoViewPagerAdapter
 import com.admin.Constants
 import com.admin.Data.SharedPrefManager
-import com.admin.Models.ModelDrama
-import com.admin.Models.ModelSeason
 import com.admin.Models.ModelUser
-import com.admin.Models.ModelVideo
-import com.admin.Models.ModelVideoManagment
+import com.admin.Models.UserViewModel
 import com.admin.Models.VideoViewModel
 import com.admin.Utils
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.ActivityManageVideoBinding
-import com.urduboltv.admin.databinding.ActivityVideoDetailBinding
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-/*
+import com.urduboltv.admin.databinding.FragmentUserBinding
 
-class ActivityManageVideo : AppCompatActivity(), AdapterManageVideo.OnItemClickListener {
+class ActivityManageVideo : AppCompatActivity(){
+private lateinit var binding:ActivityManageVideoBinding
 
-    private val videoViewModel: VideoViewModel by viewModels()
     private val db = Firebase.firestore
 
 
-    private lateinit var adapter: AdapterSeason
+    private lateinit var adapter: AdapterUser
 
     private lateinit var utils: Utils
     private lateinit var mContext: Context
     private lateinit var constants: Constants
     private lateinit var user: ModelUser
-    private lateinit var listaccessVideos:ArrayList<ModelVideo>
-    private lateinit var sharedPrefManager : SharedPrefManager
-    private lateinit var dialog : Dialog
-    private  lateinit var binding: ActivityManageVideoBinding
-
-
+    private lateinit var sharedPrefManager: SharedPrefManager
+    private lateinit var dialog: Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityManageVideoBinding.inflate(layoutInflater)
+        binding=ActivityManageVideoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        mContext = this@ActivityManageVideo
+        utils = Utils(mContext)
+        constants=Constants()
+        sharedPrefManager=SharedPrefManager(mContext)
 
-
-listaccessVideos= ArrayList()
-
-        mContext=this@ActivityManageVideo
-        utils= Utils(mContext)
-setAdapter()
-binding.next.setOnClickListener {
-    Toast.makeText(mContext, "Available soon!!", Toast.LENGTH_SHORT).show()
-}
-    }
-
-    override fun onItemClick(modelVideo: ModelVideo) {
-        listaccessVideos.add(modelVideo)
-    }
-
-    override fun onDeleteClick(modelVideo: ModelVideo) {
-
-    }
-
-    fun setAdapter() {
-        utils.startLoadingAnimation()
-        val list = ArrayList<ModelVideo>()
-
-        lifecycleScope.launch {
-            try {
-                val taskResult = videoViewModel.getPrivateVideoList().await()
-
-                if (taskResult != null) {
-                    // Check if the task result is not null, indicating a successful result
-                    if (taskResult.size() > 0) {
-                        for (document in taskResult) {
-                            list.add(document.toObject(ModelVideo::class.java))
-                        }
-                    }
-
-                    binding.rvvideos.layoutManager = LinearLayoutManager(mContext)
-                    binding.rvvideos.adapter = AdapterManageVideo(mContext, list, this@ActivityManageVideo)
-                } else {
-                    Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(mContext, e.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
-            } finally {
-                utils.endLoadingAnimation()
-            }
+        val dramaJson = intent.getStringExtra("user")
+        if (dramaJson != null) {
+            user = ModelUser.fromString(dramaJson) !!
         }
+
+        setupViewPager()
+        setupTabLayout()
+
+
     }
-}*/
+
+    private fun setupTabLayout() {
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            if(position==0) tab.text ="Assigned"
+            else if(position==1) tab.text="UnAssigned"
+        }.attach()
+    }
+
+    private fun setupViewPager() {
+        val adapter = VideoViewPagerAdapter(this@ActivityManageVideo, 2, user)
+        binding.viewPager.adapter = adapter
+    }
 
 
 
+}
 
-class ActivityManageVideo : AppCompatActivity(), AdapterManageVideo.OnItemClickListener {
+
+/*class ActivityManageVideo : AppCompatActivity(), AdapterManageVideo.OnItemClickListener {
 
     private val videoViewModel: VideoViewModel by viewModels()
     private val db = Firebase.firestore
@@ -156,8 +123,8 @@ user=ModelUser()
 
 
 
-          /*  // Now, `listaccessVideos` contains the selected items
-            Toast.makeText(mContext, "Selected videos: ${listaccessVideos.size}", Toast.LENGTH_SHORT).show()*/
+          *//*  // Now, `listaccessVideos` contains the selected items
+            Toast.makeText(mContext, "Selected videos: ${listaccessVideos.size}", Toast.LENGTH_SHORT).show()*//*
         }
     }
 
@@ -209,7 +176,7 @@ user=ModelUser()
         if(listaccessVideos.isEmpty())
         {
             utils.endLoadingAnimation()
-            Toast.makeText(mContext, "Please Select ANy Video", Toast.LENGTH_SHORT).show()
+            Toast.makeText(mContext, "Please Select Any Video", Toast.LENGTH_SHORT).show()
         }
         else
         {
@@ -222,6 +189,7 @@ user=ModelUser()
                modelVideoManagment.videoId=list1.docId
                 modelVideoManagment.userid=user.userId
                 modelVideoManagment.seasonId=list1.seasonId
+                modelVideoManagment.status="Assigned"
                 list.add(modelVideoManagment)
             }
 
@@ -245,4 +213,4 @@ user=ModelUser()
 
         }
     }
-}
+}*/

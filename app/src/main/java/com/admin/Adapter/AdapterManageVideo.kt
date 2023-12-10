@@ -12,41 +12,8 @@ import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.ItemVideoBinding
 import com.urduboltv.admin.databinding.ItemVideoManagementBinding
 
-/*
-
-class AdapterManageVideo (var activity: Context, val data: List<ModelVideo>, val lisnter:OnItemClickListener) : RecyclerView.Adapter<AdapterManageVideo.ViewHolder>(){
-
-
-    var constant= Constants()
-
-    interface OnItemClickListener {
-        fun onItemClick(modelVideo: ModelVideo)
-        fun onDeleteClick(modelVideo: ModelVideo)
-    }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ItemVideoManagementBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-    }
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) { holder.bind(data[position]) }
-    override fun getItemCount(): Int { return data.size }
-    inner class ViewHolder(val itemBinding: ItemVideoManagementBinding) : RecyclerView.ViewHolder(itemBinding.root){
-
-        fun bind(modelVideo: ModelVideo) {
-
-
-            itemBinding.dramaName.text=modelVideo.dramaName
-            itemBinding.episodeNumber.text=modelVideo.episodeno
-            Glide.with(activity).load(modelVideo.thumbnail).centerCrop()
-                .placeholder(R.drawable.ic_launcher_background).into(itemBinding.thumbnail)
-
-            itemBinding.btnradio.setOnClickListener{ lisnter.onItemClick(modelVideo)}
-
-
-        }
-
-    }
-
-}*/
 class AdapterManageVideo(
+    var from:String,
     var activity: Context,
     var data: List<ModelVideo>,
     val listener: OnItemClickListener
@@ -75,16 +42,18 @@ class AdapterManageVideo(
     }
 
     inner class ViewHolder(val itemBinding: ItemVideoManagementBinding) : RecyclerView.ViewHolder(itemBinding.root) {
-
         fun bind(modelVideo: ModelVideo) {
+            if(from.equals("Assigned"))
+            {
+                itemBinding.btnAssign.text="UnAssign"
+            }
             itemBinding.dramaName.text = modelVideo.dramaName
             itemBinding.episodeNumber.text = modelVideo.episodeno
             itemBinding.totalEpisode.text = modelVideo.totalepisodes
-            Glide.with(activity).load(modelVideo.thumbnail).placeholder(R.drawable.img_4).centerCrop().into(itemBinding.thumbnail)
+            Glide.with(activity).load(modelVideo.thumbnail).placeholder(R.drawable.img_4).centerCrop().into(itemBinding.dramaImage)
 
-            itemBinding.btnradio.isChecked = modelVideo in (activity as ActivityManageVideo).listaccessVideos
 
-            itemBinding.btnradio.setOnClickListener {
+            itemBinding.btnAssign.setOnClickListener {
                 listener.onItemClick(modelVideo)
             }
         }

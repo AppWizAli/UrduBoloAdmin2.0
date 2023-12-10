@@ -1,61 +1,52 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#414143">
 
-
-    <LinearLayout
-        android:id="@+id/laychoice"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cd2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp">
-
-        <TextView
-            android:id="@+id/user"
-            android:layout_width="0dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginTop="10dp"
+        app:cardBackgroundColor="@color/secondary_m"
+        android:layout_marginHorizontal="30dp">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="User"
-            android:paddingVertical="10dp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_marginVertical="17dp"/>
+            android:layout_alignParentTop="true"
+            android:background="@color/secondary_m"
+            app:tabGravity="fill"
+            app:tabInlineLabel="true"
+            android:layout_margin="7dp"
+            app:tabIndicator="@drawable/tab_indicator"
+            app:tabIndicatorColor="@color/white"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorGravity="stretch"
+            app:tabIndicatorHeight="54dp"
+            app:tabMode="fixed"
+            app:tabTextColor="@color/black_m"
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            />
 
-        <TextView
-            android:id="@+id/admin"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Admin"
-            android:paddingVertical="10dp"
+    </androidx.cardview.widget.CardView>
 
-            android:textStyle="bold"
-        android:gravity="end"
-            android:textColor="@color/white"
-            android:layout_marginVertical="17dp"/>
-    </LinearLayout>
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/laychoice"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_margin="10dp"
         android:layout_height="match_parent"
-        android:id="@+id/rvusers"/>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/floatingaction"
-        android:src="@drawable/baseline_add_24"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="10dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="-3dp"
+        android:layout_marginBottom="1dp"
+        android:paddingTop="40dp">
+
+
+    </androidx.viewpager2.widget.ViewPager2>
 
 </RelativeLayout>

@@ -274,7 +274,6 @@ class ActivityAddVideo : AppCompatActivity(), AdapteraddVideo.OnItemClickListene
                                     .observe(this@ActivityAddVideo) { success ->
                                         if (success) {
                                             currentVideoIndex++
-                                            updateSeason()
                                             uploadNextVideo() // Upload the next video in the list
                                         } else {
                                             Toast.makeText(

@@ -155,7 +155,7 @@ setAdapter()
                                         utils.endLoadingAnimation()
                                         Toast.makeText(
                                             mContext,
-                                            "Drama updated successfully",
+                                            "Season updated successfully",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         dialog.dismiss()
@@ -164,7 +164,7 @@ setAdapter()
                                         utils.endLoadingAnimation()
                                         Toast.makeText(
                                             mContext,
-                                            "Failed to update the drama",
+                                            "Failed to update the Season",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }

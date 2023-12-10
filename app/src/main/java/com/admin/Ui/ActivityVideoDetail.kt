@@ -23,6 +23,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -51,10 +52,11 @@ class ActivityVideoDetail : AppCompatActivity(), VideoAdapter.OnItemClickListene
     private val videoViewModel: VideoViewModel by viewModels()
     private val storage = Firebase.storage
     private val storageRef = storage.reference
+    private val IMAGE_PICKER_REQUEST_CODE = 200
     private lateinit var adapter: AdapterSeason
     private lateinit var modelVideo: ModelVideo
     private lateinit var modelSeason: ModelSeason
-
+    private var imageURI: Uri? = null
     private lateinit var utils: Utils
     private lateinit var constants: Constants
     private lateinit var mContext: Context
@@ -142,7 +144,10 @@ videoUri= ""
         dialog.setCancelable(false)
         uploadThumbnailButton.setBackgroundColor(Color.parseColor("#FEC10F"))
         nextButton.setBackgroundColor(Color.parseColor("#FEC10F"))
-
+        uploadThumbnailButton.setOnClickListener {
+            val pickImage = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(pickImage, IMAGE_PICKER_REQUEST_CODE)
+        }
         // Set details of modelVideo to the EditText fields in the dialog
         episodeNumberEditText.setText(modelVideo.episodeno)
         videoLinkEditText.setText(modelVideo.videourl)
@@ -151,54 +156,70 @@ videoUri= ""
         backButton.setOnClickListener {
             dialog.dismiss()
         }
-        // Set the privacy and download access based on the clicked ModelVideo
-        val privacyRadioButton = if (modelVideo.privacy == constants.VIDEO_PRIVACY_PRIVATE) {
-            dialog.findViewById<RadioButton>(R.id.radioPrivate)
+        if (modelVideo.privacy == constants.VIDEO_PRIVACY_PRIVATE) {
+            privacyRadioGroup.check(R.id.radioPrivate)
         } else {
-            dialog.findViewById<RadioButton>(R.id.radioPublic)
+            privacyRadioGroup.check(R.id.radioPublic)
         }
-        privacyRadioButton.isChecked = true
-        val downloadAccessRadioButton = when (modelVideo.downloadType) {
-            constants.VIDEO_DOWNLOAD_GALLERY -> dialog.findViewById<RadioButton>(R.id.radioGallery)
-            constants.VIDEO_DOWNLOAD_APPP -> dialog.findViewById<RadioButton>(R.id.radioAppStorage)
-            constants.VIDO_DOWNLOAD_BOTH -> dialog.findViewById<RadioButton>(R.id.radioBoth)
-            else -> dialog.findViewById<RadioButton>(R.id.radioNever)
+        if (modelVideo.downloadType == constants.VIDEO_DOWNLOAD_APPP) {
+            privacyRadioGroup.check(R.id.radioAppStorage)
+        } else if( modelVideo.downloadType == constants.VIDEO_DOWNLOAD_GALLERY) {
+            privacyRadioGroup.check(R.id.radioGallery)
+        }else if( modelVideo.downloadType == constants.VIDO_DOWNLOAD_BOTH) {
+            privacyRadioGroup.check(R.id.radioBoth)
+        }else if( modelVideo.downloadType == constants.VIDEO_DOWNLOAD_NEVER) {
+            privacyRadioGroup.check(R.id.radioNever)
         }
-        downloadAccessRadioButton.isChecked = true
-
         // Handle click on nextButton
         nextButton.setOnClickListener {
             // Update the modelVideo object with edited details from the dialog
             modelVideo.episodeno = episodeNumberEditText.text.toString()
             modelVideo.videourl = videoLinkEditText.text.toString()
             modelVideo.description = descriptionEditText.text.toString()
+            if(imageURI.toString().isNotEmpty())modelVideo.thumbnail=imageURI.toString()
 
-            // Update privacy and download access based on the selected radio buttons
-            modelVideo.privacy = (privacyRadioGroup.checkedRadioButtonId == R.id.radioPublic).toString()
-            // Get selected download access from radio group
-            val selectedDownloadAccessRadioButton =
-                dialog.findViewById<RadioButton>(downloadAccessRadioGroup.checkedRadioButtonId)
-            modelVideo.downloadType = selectedDownloadAccessRadioButton.text.toString()
-            
-            lifecycleScope.launch { 
-                
-       
-videoViewModel.UpdateVideo(modelVideo).observe(this@ActivityVideoDetail)
-{
-    task->
-    if(task)
-    {
-        Toast.makeText(mContext, "Video Updated Successfully", Toast.LENGTH_SHORT).show()
-        setAdapter()
-    }
-    else
-    {
 
-        Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
+            val selectedRadioButtonId = privacyRadioGroup.checkedRadioButtonId
+            when (selectedRadioButtonId) {
+                R.id.radioPublic -> modelVideo.privacy = constants.VIDEO_PRIVACY_PUBLIC
+                R.id.radioPrivate -> modelVideo.privacy = constants.VIDEO_PRIVACY_PRIVATE
+            }
 
-    }
-}
-}
+            val selectedAccess = downloadAccessRadioGroup.checkedRadioButtonId
+            when (selectedAccess) {
+                R.id.radioGallery -> modelVideo.downloadType = constants.VIDEO_DOWNLOAD_GALLERY
+                R.id.radioAppStorage -> modelVideo.downloadType = constants.VIDEO_DOWNLOAD_APPP
+                R.id.radioNever -> modelVideo.downloadType = constants.VIDEO_DOWNLOAD_NEVER
+                R.id.radioBoth -> modelVideo.downloadType = constants.VIDO_DOWNLOAD_BOTH
+            }
+            uploadThumbnailImage(modelVideo.thumbnail.toUri()) { thumbnailUrl ->
+                    if (thumbnailUrl != null) {
+                        modelVideo.thumbnail = thumbnailUrl
+                    }
+                    lifecycleScope.launch {
+
+                        videoViewModel.UpdateVideo(modelVideo).observe(this@ActivityVideoDetail)
+                        {
+                                task->
+                            if(task)
+                            {
+                                Toast.makeText(mContext, "Video Updated Successfully", Toast.LENGTH_SHORT).show()
+                                setAdapter()
+                            }
+                            else
+                            {
+                                Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
+
+                            }
+                        }
+                    }
+
+
+
+            }
+
+
+
             dialog.dismiss()
 
             // Show a toast or perform other actions based on the update result
@@ -208,73 +229,6 @@ videoViewModel.UpdateVideo(modelVideo).observe(this@ActivityVideoDetail)
     }
 
 
-
-    /*
-        private fun showEditDialog(modelVideo: ModelVideo) {
-            val dialogView = LayoutInflater.from(mContext).inflate(R.layout.dialog_video, null)
-
-            val builder = AlertDialog.Builder(mContext)
-                .setView(dialogView)
-                .setTitle("Edit Video Details")
-
-            val alertDialog = builder.create()
-            alertDialog.show()
-
-            // Initialize your views from the dialog layout
-            val episodeNumberEditText = dialogView.findViewById<EditText>(R.id.episodeNumber)
-            val videoLinkEditText = dialogView.findViewById<EditText>(R.id.videolink)
-            val descriptionEditText = dialogView.findViewById<EditText>(R.id.editTextDescription)
-            val privacyRadioGroup = dialogView.findViewById<RadioGroup>(R.id.radioGroupPrivacy)
-            val downloadAccessRadioGroup = dialogView.findViewById<RadioGroup>(R.id.radioGroupDownloadAccess)
-            val uploadThumbnailButton = dialogView.findViewById<Button>(R.id.btnUploadThumbnail)
-            val nextButton = dialogView.findViewById<Button>(R.id.btnNext)
-
-            // Set the details of the clicked ModelVideo to the EditText fields
-            episodeNumberEditText.setText(modelVideo.episodeno)
-            videoLinkEditText.setText(modelVideo.videourl)
-            descriptionEditText.setText(modelVideo.description)
-
-            // Set the privacy and download access based on the clicked ModelVideo
-            val privacyRadioButton = if (modelVideo.privacy==constants.VIDEO_PRIVACY_PRIVATE) {
-                dialogView.findViewById<RadioButton>(R.id.radioPublic)
-            } else {
-                dialogView.findViewById<RadioButton>(R.id.radioPrivate)
-            }
-            privacyRadioButton.isChecked = true
-
-            val downloadAccessRadioButton = when (modelVideo.downloadType) {
-               constants.VIDEO_DOWNLOAD_GALLERY -> dialogView.findViewById<RadioButton>(R.id.radioGallery)
-          constants.VIDEO_DOWNLOAD_APPP -> dialogView.findViewById<RadioButton>(R.id.radioAppStorage)
-              constants.VIDO_DOWNLOAD_BOTH -> dialogView.findViewById<RadioButton>(R.id.radioBoth)
-                else -> dialogView.findViewById<RadioButton>(R.id.radioNever)
-            }
-            downloadAccessRadioButton.isChecked = true
-
-            // Handle the nextButton click
-            nextButton.setOnClickListener {
-                // Update the ModelVideo object with the edited details from the dialog
-                modelVideo.episodeno = episodeNumberEditText.text.toString()
-                modelVideo.videourl = videoLinkEditText.text.toString()
-                modelVideo.description = descriptionEditText.text.toString()
-
-                // Update privacy and download access based on the selected radio buttons
-                modelVideo.privacy = (privacyRadioGroup.checkedRadioButtonId == R.id.radioPublic).toString()
-                // Get selected download access from radio group
-                val selectedDownloadAccessRadioButton =
-                    dialogView.findViewById<RadioButton>(downloadAccessRadioGroup.checkedRadioButtonId)
-                modelVideo.downloadType = selectedDownloadAccessRadioButton.text.toString()
-
-                // Implement further logic here, e.g., call viewModel.editVideo(modelVideo) to update the video
-                // Dismiss the dialog
-                alertDialog.dismiss()
-
-                // Show a toast or perform other actions based on the update result
-            }
-        }
-    */
-
-
-    // Method to perform delete action
     private fun performDeleteAction(modelVideo: ModelVideo) {
         // Implement your delete action logic here
         // For example, show a confirmation dialog before deletion
@@ -338,6 +292,35 @@ videoViewModel.UpdateVideo(modelVideo).observe(this@ActivityVideoDetail)
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
+        if (requestCode == IMAGE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            imageURI = data?.data
+
+        }
+
+    }
+    private fun uploadThumbnailImage(imageUri: Uri, callback: (String?) -> Unit) {
+        utils.startLoadingAnimation()
+        val storageRef =
+            Firebase.storage.reference.child("thumbnails/${System.currentTimeMillis()}_${imageUri.lastPathSegment}")
+        storageRef.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                taskSnapshot.storage.downloadUrl.addOnCompleteListener { downloadUrlTask ->
+                    if (downloadUrlTask.isSuccessful) {
+                        utils.endLoadingAnimation()
+                        val downloadUrl = downloadUrlTask.result.toString()
+                        callback(downloadUrl)
+                    } else {
+                        utils.endLoadingAnimation()
+                        callback(null)
+                    }
+                }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
 
 }
