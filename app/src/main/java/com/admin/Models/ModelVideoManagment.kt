@@ -4,10 +4,10 @@ import com.google.gson.Gson
 
 class ModelVideoManagment
     (
-    var videoId:String="",
-    var userid:String="" ,
+    var video_Id:String="",
+    var group_Id:String="" ,
     var seasonId:String="",
-    var status:String=""
+    var doc_Id:String=""
             )
 {
     override fun toString(): String {

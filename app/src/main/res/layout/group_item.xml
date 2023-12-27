@@ -44,12 +44,12 @@ android:orientation="vertical"
     android:layout_height="wrap_content"
     android:layout_gravity="end"
     android:orientation="horizontal">
-<ImageView
+<TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/baseline_add_24"
-    android:id="@+id/addMember"
-    app:tint="@color/primary" />
+    android:id="@+id/viewPartcipents"
+    android:text="View Partcipents"
+  android:textColor="@color/primary" />
     <ImageView
         android:id="@+id/imageViewEdit"
         android:layout_width="24dp"

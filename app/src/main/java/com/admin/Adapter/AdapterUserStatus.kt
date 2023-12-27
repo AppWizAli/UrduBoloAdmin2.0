@@ -45,15 +45,24 @@ class AdapterUserStatus(
 
     inner class ViewHolder(val itemBinding: ItemUserStatusBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(modelVideo: ModelUser) {
-           /* if(from.equals("Assigned"))
+            if(from.equals("Assigned"))
             {
-                itemBinding.btnAssign.text="UnAssign"
-            }*/
+                itemBinding.assign.text="Remove"
+
+            }
+
+            itemBinding.assign.setOnClickListener {
+                if (from == "UnAssigned") {
+                    listener.onAssignUserClick(modelVideo)
+                } else {
+                    listener.onUnAssignUserClcik(modelVideo)
+                }
+            }
+
+
             itemBinding.name.text = modelVideo.name
             itemBinding.email.text = modelVideo.email
-            itemBinding.assign.setOnClickListener {
-                listener.onAssignUserClick(modelVideo)
-            }
+
         }
     }
 }

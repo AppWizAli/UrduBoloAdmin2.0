@@ -38,6 +38,8 @@ class UserViewModel(context: Application) : AndroidViewModel(context) {
     }
     suspend fun deletAdmin(modelUser: Admin): LiveData<Boolean> {
         return repo.deletAdmin(modelUser)
+    } suspend fun SetUnassignVideo(videoid:String,groupId:String): LiveData<Boolean> {
+        return repo.unassignVideo(videoid,groupId)
     }  suspend fun deleteUser(modelUser: ModelUser): LiveData<Boolean> {
         return repo.deleteUser(modelUser)
     } suspend fun deleteGroup(modelUser: ModelGroup): LiveData<Boolean> {
@@ -49,6 +51,9 @@ class UserViewModel(context: Application) : AndroidViewModel(context) {
     }  suspend fun getGroupList(): Task<QuerySnapshot> {
 
         return  repo.getGroupList()
+    } suspend fun getGroupMember(id:String): Task<DocumentSnapshot> {
+
+        return  repo.getGroupMember(id)
     }
     suspend fun getAdminList(): Task<QuerySnapshot> {
 

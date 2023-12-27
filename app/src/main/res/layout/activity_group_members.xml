@@ -9,6 +9,17 @@
         android:layout_marginTop="40dp"
         >
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Nothing have been assigned yet!!"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:textSize="22sp"
+            android:id="@+id/tvnothing"/>
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvvideos"
             android:layout_width="match_parent"
@@ -19,4 +30,12 @@
             android:layout_marginBottom="55dp" />
 
     </RelativeLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/floatingaction"
+        android:src="@drawable/baseline_add_24"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="10dp"/>
 </RelativeLayout>

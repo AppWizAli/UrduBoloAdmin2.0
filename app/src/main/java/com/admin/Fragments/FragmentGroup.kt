@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,6 +50,7 @@ class FragmentGroup : Fragment(), AdapterGroup.OnItemClickListener ,AdapterUserS
     private val userViewModel: UserViewModel by viewModels()
     private val db = Firebase.firestore
 
+    private lateinit var bottomSheetDialog: BottomSheetDialog
 
     private lateinit var adapter: AdapterUser
     private lateinit var modelGroup: ModelGroup
@@ -238,8 +241,12 @@ modelGroup= ModelGroup()
     }
 
     override fun onGroupClick(modelUser: ModelGroup) {
-  startActivity(Intent(mContext,ActivityGroupMembers::class.java))
+
+        val intent = Intent(mContext, ActivityGroupMembers::class.java)
+        intent.putExtra("group", modelUser.toString()) // Serialize to JSON
+        mContext.startActivity(intent)
     }
+
 
     override fun onGroupdeleteClick(modelUser: ModelGroup) {
         val builder = AlertDialog.Builder(mContext)
@@ -304,85 +311,63 @@ modelGroup= ModelGroup()
         dialog.show()
     }
 
-    override fun onAddMemberClick(modelUser: ModelGroup) {
-      showDialogAddMember(modelUser)
-    }
-    private fun showDialogAddMember(modelUser: ModelGroup) {
-        val bottomdialog = BottomSheetDialog(mContext)
+    override fun onAddMemberClick(modelGroup1: ModelGroup) {
+modelGroup=modelGroup1
+    bottomSheetDialog = BottomSheetDialog(mContext)
         val bottomSheet = layoutInflater.inflate(R.layout.dialog_bottom, null)
-        bottomdialog.setContentView(bottomSheet)
+        bottomSheetDialog.setContentView(bottomSheet)
+        var rv = bottomSheetDialog.findViewById<RecyclerView>(R.id.recyclerViewCustomBottomSheet)
+
+        var userInGroup = emptyList<ModelUser>()
+        val userList = sharedPrefManager.getUserList()
+        Toast.makeText(mContext, "exist" + userList.size, Toast.LENGTH_SHORT).show()
+
+        userInGroup = userList.filter { user ->
+            modelGroup1.users.contains(user.userId)
+        }
+
+        rv?.layoutManager = LinearLayoutManager(mContext)
+        rv?.adapter = AdapterUserStatus("Assigned", mContext, userInGroup, this)
 
 
-        var rv=bottomdialog.findViewById<RecyclerView>(R.id.recyclerViewCustomBottomSheet)
-
-        var list= ArrayList<ModelUser> ()
-        lifecycleScope.launch {
-            utils.startLoadingAnimation()
-            userViewModel.getUserList()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        utils.endLoadingAnimation()
-                        if (task.result.size() > 0) {
-
-                            for (document in task.result)
-                                if( document.toObject(
-                                        ModelUser::class.java
-                                    ).status.equals("unassigned"))
-                                {
-                                    list.add(
-                                        document.toObject(
-                                            ModelUser::class.java
-                                        )
-                                    )
-                                }
-
-
-
-                        }
-                     rv!!.layoutManager = LinearLayoutManager(mContext)
-                       rv!!.adapter= AdapterUserStatus("User",mContext,list,this@FragmentGroup)
-
-                    } else
-                    {
-                        utils.endLoadingAnimation()
-                        Toast.makeText(
-                            mContext,
-                            constants.SOMETHING_WENT_WRONG_MESSAGE,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-
-                }
-                .addOnFailureListener {
-                    utils.endLoadingAnimation()
-                    Toast.makeText(mContext, it.message + "", Toast.LENGTH_SHORT).show()
-
-                }
-
-
-
-            bottomdialog.show()
+        bottomSheetDialog.show()
     }
 
-
-
-
-
-
-
-
-    }
 
     override fun onAssignUserClick(modelVideo: ModelUser) {
 
-
-/*lifecycleScope.launch {
-    userViewModel.updateGroup()
-}*/
     }
 
-    override fun onUnAssignUserClcik(modelVideo: ModelUser) {
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onUnAssignUserClcik(modelUser: ModelUser) {
+lifecycleScope.launch {
+    val idToRemove = modelUser.userId
+    val mutableList = modelGroup.users.toMutableList()
+    mutableList.removeIf { it == idToRemove }
+    modelGroup.users = mutableList.toList()
 
+
+    userViewModel.updateGroup(
+        modelGroup
+    ).observe(
+        this@FragmentGroup
+    )
+    {
+        task->
+
+        if(task)
+        {
+            Toast.makeText(mContext, "User Removed Successfully", Toast.LENGTH_SHORT).show()
+            bottomSheetDialog.dismiss()
+
+        }
+        else
+        {
+            Toast.makeText(mContext, constants.SOMETHING_WENT_WRONG_MESSAGE, Toast.LENGTH_SHORT).show()
+            bottomSheetDialog.dismiss()
+        }
+    }
+
+}
     }
 }

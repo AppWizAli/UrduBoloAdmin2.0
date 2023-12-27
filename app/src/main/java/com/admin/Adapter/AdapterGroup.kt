@@ -43,7 +43,7 @@ class AdapterGroup ( val data: List<ModelGroup>, val listener: OnItemClickListen
             itemBinding.imageViewDelete.setOnClickListener{ listener.onGroupdeleteClick(modelUser)}
             itemBinding.imageViewEdit.setOnClickListener{ listener.onGroupUpdateClick(modelUser)}
             itemBinding.contanier.setOnClickListener{ listener.onGroupClick(modelUser)}
-            itemBinding.addMember.setOnClickListener{ listener.onAddMemberClick(modelUser)}
+            itemBinding.viewPartcipents.setOnClickListener{ listener.onAddMemberClick(modelUser)}
         }
 
     }

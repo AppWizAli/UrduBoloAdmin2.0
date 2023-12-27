@@ -88,6 +88,10 @@ binding.user.setOnClickListener(
         binding.viewPager.adapter = adapter
     }
 
+
+
+
+
 /*
 
 

@@ -39,12 +39,26 @@ class VideoViewModel(context: Application) : AndroidViewModel(context) {
         return repo.getUnAssignedPrivateVideo(id)
     }
 
+
+
+    suspend fun getAssignedVideoList(id: String): Task<QuerySnapshot> {
+
+        return repo.getAssignedVideoList(id)
+    }
+    suspend fun getAssignedVideoList(id: List<String>): Task<QuerySnapshot> {
+
+        return repo.getAssignedVideoList(id)
+    }
+    suspend fun getPrivateVideoList(): Task<QuerySnapshot> {
+
+        return  repo.getPrivateVideoList()
+    }
     suspend fun getAssignedVideo(id: String): Task<QuerySnapshot> {
 
         return repo.getAssignedVideo(id)
     }
 
-    suspend fun assignPrivateVidoes(videoManagements: ArrayList<ModelVideoManagment>): LiveData<Boolean> {
+    suspend fun assignPrivateVidoes(videoManagements:ModelVideoManagment): LiveData<Boolean> {
         return repo.assignPrivateVideos(videoManagements)
     }
 

@@ -35,8 +35,16 @@ class SharedPrefManager(var context: Context) {
     fun putUserList(list: List<ModelUser>) {
         editor.putString("ListUsers", Gson().toJson(list))
         editor.commit()
+    }  fun putPrivateVideoList(list: List<ModelVideo>) {
+        editor.putString("PrivateVideos", Gson().toJson(list))
+        editor.commit()
     }
-    fun getUserList(): List<ModelUser> {
+    fun getPrivateVideoList(): List<ModelVideo> {
+        val json = sharedPref.getString("PrivateVideos", "") ?: ""
+        val type: Type = object : TypeToken<List<ModelVideo?>?>() {}.type
+
+        return Gson().fromJson(json, type) ?: emptyList()
+    }  fun getUserList(): List<ModelUser> {
         val json = sharedPref.getString("ListUsers", "") ?: ""
         val type: Type = object : TypeToken<List<ModelUser?>?>() {}.type
 

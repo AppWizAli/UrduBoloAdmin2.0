@@ -17,6 +17,7 @@ import com.admin.Models.ModelUser
 import com.admin.Models.ModelVideo
 import com.admin.Models.ModelVideoManagment
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.UploadTask
@@ -126,18 +127,34 @@ class Repo(var context: Context) {
 
 
 
-    suspend fun getAssignedVideo(userId: String): Task<QuerySnapshot> {
-        return VideoCollection
-            .whereEqualTo(constants.PRIVACY, constants.VIDEO_PRIVACY_PRIVATE)
-            .whereArrayContains("users_Id", userId)
+    suspend fun getAssignedVideoList(userIds: String): Task<QuerySnapshot> {
+        return VideoManagementCollection
+            .whereEqualTo("group_Id", userIds)
             .get()
     }
+    suspend fun getGroupMember(id: String): Task<DocumentSnapshot> {
+        return GroupCollection
+            .document(id)
+            .get()
+    }
+
+
+    suspend fun getAssignedVideo(userIds:String): Task<QuerySnapshot> {
+        return VideoCollection
+            .whereEqualTo(constants.PRIVACY, constants.VIDEO_PRIVACY_PRIVATE)
+            .whereEqualTo("users_Id", userIds)
+            .get()
+    }
+
 
 
     suspend fun getUserList(): Task<QuerySnapshot> {
         return UserCollection.get()
     }
-
+    suspend fun getPrivateVideoList(): Task<QuerySnapshot> {
+        return VideoCollection
+            .whereEqualTo(constants.PRIVACY,constants.VIDEO_PRIVACY_PRIVATE).get()
+    }
     suspend fun getGroupList(): Task<QuerySnapshot> {
         return GroupCollection.get()
     }
@@ -187,7 +204,11 @@ class Repo(var context: Context) {
             }
         return result
     }
-
+    suspend fun getAssignedVideoList(videoIdList: List<String>): Task<QuerySnapshot> {
+        return VideoCollection
+            .whereIn("docId", videoIdList)
+            .get()
+    }
     suspend fun updateGroup(modelDrama: ModelGroup): LiveData<Boolean> {
         val result = MutableLiveData<Boolean>()
         GroupCollection.document(modelDrama.doc_Id).set(modelDrama)
@@ -217,209 +238,247 @@ class Repo(var context: Context) {
             }
         return result
     }
-
-    fun deleteUser(modelSeason: ModelUser): LiveData<Boolean> {
-        //  Toast.makeText(context, modelSeason.docId, Toast.LENGTH_SHORT).show()
-        val result = MutableLiveData<Boolean>()
-        UserCollection.document(modelSeason.userId).delete()
-            .addOnSuccessListener {
-                result.value = true
-                // Deletion successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    fun deleteGroup(modelSeason: ModelGroup): LiveData<Boolean> {
-        //  Toast.makeText(context, modelSeason.docId, Toast.LENGTH_SHORT).show()
-        val result = MutableLiveData<Boolean>()
-        GroupCollection.document(modelSeason.doc_Id).delete()
-            .addOnSuccessListener {
-                result.value = true
-                // Deletion successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    suspend fun getAdminList(): Task<QuerySnapshot> {
-        return AdminCollection.get()
-    }
-
-    suspend fun getAdmin(admin: String): Task<QuerySnapshot> {
-        return AdminCollection.whereEqualTo("email", admin).get()
-    }
-
-
-    suspend fun addSeason(modelSeason: ModelSeason): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        SeasonCollection.add(modelSeason)
-            .addOnSuccessListener { documentReference ->
-                // Store the generated document ID in the ModelDrama
-                modelSeason.docId = documentReference.id
-
-                // Update the document with the stored ID
-                SeasonCollection.document(documentReference.id).set(modelSeason)
-                    .addOnSuccessListener {
-                        result.value = true
+    fun unassignVideo(videoId: String, groupId: String): MutableLiveData<Boolean> {
+            val resultLiveData = MutableLiveData<Boolean>()
+            VideoManagementCollection
+                .whereEqualTo("group_Id", groupId)
+                .whereEqualTo("video_Id", videoId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        resultLiveData.value = false
+                        return@addOnSuccessListener
                     }
-                    .addOnFailureListener {
-                        result.value = false
+
+                    val deleteTasks = mutableListOf<Task<Void>>()
+
+                    for (document in documents) {
+                        val deleteTask = VideoManagementCollection.document(document.id).delete()
+                        deleteTasks.add(deleteTask)
                     }
-            }
-            .addOnFailureListener {
-                result.value = false
-            }
 
-        return result
-    }
-
-
-    suspend fun addUser(modelUser: ModelUser): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        UserCollection.add(modelUser)
-            .addOnSuccessListener { documentReference ->
-                // Store the generated document ID in the ModelDrama
-                modelUser.userId = documentReference.id
-
-                // Update the document with the stored ID
-                UserCollection.document(documentReference.id).set(modelUser)
-                    .addOnSuccessListener {
-                        result.value = true
+                    // Execute all delete tasks asynchronously
+                    val allTasks = Tasks.whenAll(deleteTasks)
+                    allTasks.addOnCompleteListener { task ->
+                        resultLiveData.value = task.isSuccessful
                     }
-                    .addOnFailureListener {
-                        result.value = false
-                    }
-            }
-            .addOnFailureListener {
-                result.value = false
-            }
+                }
+                .addOnFailureListener { e ->
+                    resultLiveData.value = false
+                    println("Error getting documents: $e")
+                }
 
-        return result
-    }
+            return resultLiveData
+        }
 
-    suspend fun addGroup(modelUser: ModelGroup): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        GroupCollection.add(modelUser)
-            .addOnSuccessListener { documentReference ->
-                // Store the generated document ID in the ModelDrama
-                modelUser.doc_Id = documentReference.id
 
-                // Update the document with the stored ID
-                GroupCollection.document(documentReference.id).set(modelUser)
-                    .addOnSuccessListener {
-                        result.value = true
-                    }
-                    .addOnFailureListener {
-                        result.value = false
-                    }
-            }
-            .addOnFailureListener {
-                result.value = false
-            }
-
-        return result
-    }
-
-    suspend fun assignPrivateVideos(videoManagements: ArrayList<ModelVideoManagment>): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-
-        for (videoManagment in videoManagements) {
-            VideoManagementCollection.add(videoManagment)
+        fun deleteUser(modelSeason: ModelUser): LiveData<Boolean> {
+            //  Toast.makeText(context, modelSeason.docId, Toast.LENGTH_SHORT).show()
+            val result = MutableLiveData<Boolean>()
+            UserCollection.document(modelSeason.userId).delete()
                 .addOnSuccessListener {
-                    // Handle success if needed
+                    result.value = true
+                    // Deletion successful, handle any success cases if needed
                 }
                 .addOnFailureListener {
                     result.value = false
-                    // Handle failure if needed
+                    // Handle failure scenarios if needed
                 }
-                .await()  // This suspends until the operation is complete
+            return result
         }
 
-        result.value = true  // Set true after all items are processed successfully
-        return result
+        fun deleteGroup(modelSeason: ModelGroup): LiveData<Boolean> {
+            //  Toast.makeText(context, modelSeason.docId, Toast.LENGTH_SHORT).show()
+            val result = MutableLiveData<Boolean>()
+            GroupCollection.document(modelSeason.doc_Id).delete()
+                .addOnSuccessListener {
+                    result.value = true
+                    // Deletion successful, handle any success cases if needed
+                }
+                .addOnFailureListener {
+                    result.value = false
+                    // Handle failure scenarios if needed
+                }
+            return result
+        }
+
+        suspend fun getAdminList(): Task<QuerySnapshot> {
+            return AdminCollection.get()
+        }
+
+        suspend fun getAdmin(admin: String): Task<QuerySnapshot> {
+            return AdminCollection.whereEqualTo("email", admin).get()
+        }
+
+
+        suspend fun addSeason(modelSeason: ModelSeason): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            SeasonCollection.add(modelSeason)
+                .addOnSuccessListener { documentReference ->
+                    // Store the generated document ID in the ModelDrama
+                    modelSeason.docId = documentReference.id
+
+                    // Update the document with the stored ID
+                    SeasonCollection.document(documentReference.id).set(modelSeason)
+                        .addOnSuccessListener {
+                            result.value = true
+                        }
+                        .addOnFailureListener {
+                            result.value = false
+                        }
+                }
+                .addOnFailureListener {
+                    result.value = false
+                }
+
+            return result
+        }
+
+
+        suspend fun addUser(modelUser: ModelUser): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            UserCollection.add(modelUser)
+                .addOnSuccessListener { documentReference ->
+                    // Store the generated document ID in the ModelDrama
+                    modelUser.userId = documentReference.id
+
+                    // Update the document with the stored ID
+                    UserCollection.document(documentReference.id).set(modelUser)
+                        .addOnSuccessListener {
+                            result.value = true
+                        }
+                        .addOnFailureListener {
+                            result.value = false
+                        }
+                }
+                .addOnFailureListener {
+                    result.value = false
+                }
+
+            return result
+        }
+
+        suspend fun addGroup(modelUser: ModelGroup): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            GroupCollection.add(modelUser)
+                .addOnSuccessListener { documentReference ->
+                    // Store the generated document ID in the ModelDrama
+                    modelUser.doc_Id = documentReference.id
+
+                    // Update the document with the stored ID
+                    GroupCollection.document(documentReference.id).set(modelUser)
+                        .addOnSuccessListener {
+                            result.value = true
+                        }
+                        .addOnFailureListener {
+                            result.value = false
+                        }
+                }
+                .addOnFailureListener {
+                    result.value = false
+                }
+
+            return result
+        }
+
+        suspend fun assignPrivateVideos(videoManagements: ModelVideoManagment): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            VideoManagementCollection.add(videoManagements)
+                .addOnSuccessListener { documentReference ->
+                    // Store the generated document ID in the ModelDrama
+                    videoManagements.doc_Id = documentReference.id
+
+                    // Update the document with the stored ID
+                    VideoManagementCollection.document(documentReference.id).set(videoManagements)
+                        .addOnSuccessListener {
+                            result.value = true
+                        }
+                        .addOnFailureListener {
+                            result.value = false
+                        }
+                }
+                .addOnFailureListener {
+                    result.value = false
+                }
+
+            return result
+        }
+
+
+        fun deleteSeason(modelSeason: ModelSeason): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            SeasonCollection.document(modelSeason.docId).delete()
+                .addOnSuccessListener {
+                    result.value = true
+                    // Deletion successful, handle any success cases if needed
+                }
+                .addOnFailureListener {
+                    result.value = false
+                    // Handle failure scenarios if needed
+                }
+            return result
+        }
+
+        fun deleteDrama(modelSeason: ModelDrama): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            DramaCollection.document(modelSeason.docId).delete()
+                .addOnSuccessListener {
+                    result.value = true
+                    // Deletion successful, handle any success cases if needed
+                }
+                .addOnFailureListener {
+                    result.value = false
+                    // Handle failure scenarios if needed
+                }
+            return result
+        }
+
+        fun deleteVideo(modelSeason: ModelVideo): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            VideoCollection.document(modelSeason.docId).delete()
+                .addOnSuccessListener {
+                    result.value = true
+                    // Deletion successful, handle any success cases if needed
+                }
+                .addOnFailureListener {
+                    result.value = false
+                    // Handle failure scenarios if needed
+                }
+            return result
+        }
+
+        suspend fun updateSeason(modelDrama: ModelSeason): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            SeasonCollection.document(modelDrama.docId).set(modelDrama)
+                .addOnSuccessListener {
+                    result.value = true
+                    // Update successful, handle any success cases if needed
+                }
+                .addOnFailureListener {
+                    result.value = false
+
+                    // Handle failure scenarios if needed
+                }
+            return result
+        }
+
+        suspend fun UpdateVideo(modelDrama: ModelVideo): LiveData<Boolean> {
+            val result = MutableLiveData<Boolean>()
+            VideoCollection.document(modelDrama.docId).set(modelDrama)
+                .addOnSuccessListener {
+                    result.value = true
+                    // Update successful, handle any success cases if needed
+                }
+                .addOnFailureListener {
+                    result.value = false
+
+                    // Handle failure scenarios if needed
+                }
+            return result
+        }
+
+        suspend fun getSeasonbyId(type: String): Task<DocumentSnapshot> {
+            return SeasonCollection.document(type).get()
+        }
+
     }
-
-
-    fun deleteSeason(modelSeason: ModelSeason): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        SeasonCollection.document(modelSeason.docId).delete()
-            .addOnSuccessListener {
-                result.value = true
-                // Deletion successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    fun deleteDrama(modelSeason: ModelDrama): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        DramaCollection.document(modelSeason.docId).delete()
-            .addOnSuccessListener {
-                result.value = true
-                // Deletion successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    fun deleteVideo(modelSeason: ModelVideo): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        VideoCollection.document(modelSeason.docId).delete()
-            .addOnSuccessListener {
-                result.value = true
-                // Deletion successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    suspend fun updateSeason(modelDrama: ModelSeason): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        SeasonCollection.document(modelDrama.docId).set(modelDrama)
-            .addOnSuccessListener {
-                result.value = true
-                // Update successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    suspend fun UpdateVideo(modelDrama: ModelVideo): LiveData<Boolean> {
-        val result = MutableLiveData<Boolean>()
-        VideoCollection.document(modelDrama.docId).set(modelDrama)
-            .addOnSuccessListener {
-                result.value = true
-                // Update successful, handle any success cases if needed
-            }
-            .addOnFailureListener {
-                result.value = false
-
-                // Handle failure scenarios if needed
-            }
-        return result
-    }
-
-    suspend fun getSeasonbyId(type: String): Task<DocumentSnapshot> {
-        return SeasonCollection.document(type).get()
-    }
-}
