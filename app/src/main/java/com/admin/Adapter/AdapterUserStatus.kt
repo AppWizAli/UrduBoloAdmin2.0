@@ -3,6 +3,7 @@ package com.admin.Adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.admin.Constants
 import com.admin.Models.ModelUser
@@ -41,7 +42,9 @@ class AdapterUserStatus(
     fun updateList(newList: List<ModelUser>) {
         data = newList
         notifyDataSetChanged()
+        Toast.makeText(activity, data.size.toString(), Toast.LENGTH_SHORT).show()
     }
+
 
     inner class ViewHolder(val itemBinding: ItemUserStatusBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         fun bind(modelVideo: ModelUser) {

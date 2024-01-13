@@ -22,9 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="18sp"
-            android:text="email"
-         android:textColor="@color/white"
+            android:text="123@gmail.com"
+         android:textColor="@color/black"
             android:id="@+id/email"/>
     </LinearLayout>
 

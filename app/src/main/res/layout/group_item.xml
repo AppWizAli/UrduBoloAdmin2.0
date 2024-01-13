@@ -9,12 +9,6 @@ android:orientation="vertical"
     android:padding="16dp">
 
 
-    <!-- Vertical LinearLayout for Group Name and Description -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
         <!-- Group Name -->
         <TextView
             android:id="@+id/textViewGroupName"
@@ -32,13 +26,10 @@ android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="14sp"
             android:text="Long Description that Extends to Multiple Lines for Better Adaptability in UI"
-            android:maxLines="1"/>
+          />
 
-        <!-- Other Views or Widgets as needed for the group item -->
 
-    </LinearLayout>
 <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

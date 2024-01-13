@@ -6,12 +6,20 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="40dp"
         >
+
+
+        <androidx.appcompat.widget.SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvSearch"/>
+
         <androidx.recyclerview.widget.RecyclerView
 
             android:layout_width="match_parent"
             android:layout_margin="10dp"
+            android:layout_below="@+id/tvSearch"
             android:layout_height="match_parent"
         android:id="@+id/rvGroups"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton

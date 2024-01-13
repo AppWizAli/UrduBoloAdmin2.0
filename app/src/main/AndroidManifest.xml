@@ -23,6 +23,11 @@
         android:theme="@style/Base.Theme.UrduBoloTv"
         tools:targetApi="31">
         <activity
+            android:name="com.admin.Ui.ActivityTesterPlayer"
+            android:exported="false" >
+
+        </activity>
+        <activity
             android:name="com.admin.Ui.ActivityGroupMembers"
             android:exported="false" />
         <activity
@@ -59,6 +64,7 @@
         <activity
             android:name="com.admin.Ui.MainActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme" />
     </application>
 

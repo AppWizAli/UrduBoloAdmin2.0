@@ -17,13 +17,16 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.admin.Adapter.AdapterGroup
 import com.admin.Adapter.AdapterUser
 import com.admin.Constants
 import com.admin.Data.SharedPrefManager
+import com.admin.Models.ModelGroup
 import com.admin.Models.ModelUser
 import com.admin.Models.UserViewModel
 import com.admin.Models.VideoViewModel
@@ -35,6 +38,7 @@ import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.FragmentUserBinding
 import com.urduboltv.admin.databinding.FragmentUserManagementBinding
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
 
@@ -44,7 +48,7 @@ class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
     private val userViewModel: UserViewModel by viewModels()
     private val db = Firebase.firestore
 
-
+    var list= ArrayList<ModelUser> ()
     private lateinit var adapter: AdapterUser
 
     private lateinit var utils: Utils
@@ -68,7 +72,17 @@ class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
 
 
         setUserAdapter()
-
+        binding.tvSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String): Boolean {
+                // inside on query text change method we are
+                // calling a method to filter our recycler view.
+                filter(newText)
+                return false
+            }
+        })
 
         binding.floatingaction.setOnClickListener {
             showChoiceDialog()
@@ -76,7 +90,30 @@ class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
 
         return root
     }
+    private fun filter(text: String) {
+        // creating a new array list to filter our data.
+        val filteredlist = ArrayList<ModelUser>()
 
+        for (user in list) {
+            // checking if the entered string matched with any item of our recycler view.
+            if (user.name.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
+                // if the item is matched we are
+                // adding it to our filtered list.
+                filteredlist.add(user)
+            }
+        }
+
+        if (filteredlist.isEmpty()) {
+            // if no item is added in filtered list we are
+            // displaying a toast message as no data found.
+            Toast.makeText(mContext, "No Data Found..", Toast.LENGTH_SHORT).show()
+
+        } else {
+            binding.rvusers.adapter= AdapterUser("User",filteredlist,this@FragmentUserManagement)
+
+        }
+
+    }
     @SuppressLint("SuspiciousIndentation")
     private  fun showChoiceDialog()
     {
@@ -337,9 +374,9 @@ class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
 
 
     override fun onitemclick(modelUser: ModelUser) {
-        val intent = Intent(mContext, ActivityManageVideo::class.java)
+    /*    val intent = Intent(mContext, ActivityManageVideo::class.java)
         intent.putExtra("user", modelUser.toString()) // Serialize to JSON
-        mContext.startActivity(intent)
+        mContext.startActivity(intent)*/
     }
 
     override fun onViewClick(modelUser: ModelUser) {
@@ -386,7 +423,7 @@ class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
 
     fun setUserAdapter() {
 
-        var list= ArrayList<ModelUser> ()
+
         lifecycleScope.launch {
             utils.startLoadingAnimation()
             userViewModel.getUserList()
@@ -405,7 +442,7 @@ class FragmentUserManagement : Fragment(),AdapterUser.OnItemClickListener {
 
                         }
                         binding.rvusers.layoutManager = LinearLayoutManager(mContext)
-                        binding.rvusers.adapter= AdapterUser("User",list,this@FragmentUserManagement)
+                        binding.rvusers.adapter= AdapterUser("User",list.sortedBy { it.name },this@FragmentUserManagement)
 
                     } else
                     {

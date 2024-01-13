@@ -12,7 +12,11 @@
     android:background="@color/primary"/>
 
 
-
+    <androidx.appcompat.widget.SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search Here"
+        android:id="@+id/tvSearchView"/>
     <!-- RecyclerView or other content -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCustomBottomSheet"

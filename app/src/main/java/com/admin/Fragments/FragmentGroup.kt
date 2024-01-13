@@ -19,6 +19,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,11 +42,12 @@ import com.google.firebase.ktx.Firebase
 import com.urduboltv.admin.R
 import com.urduboltv.admin.databinding.FragmentGroupBinding
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class FragmentGroup : Fragment(), AdapterGroup.OnItemClickListener ,AdapterUserStatus.OnItemClickListener{
 
     private var _binding: FragmentGroupBinding? = null
-
+    var list= ArrayList<ModelGroup> ()
     private val videoViewModel: VideoViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
     private val db = Firebase.firestore
@@ -76,13 +78,48 @@ class FragmentGroup : Fragment(), AdapterGroup.OnItemClickListener ,AdapterUserS
 
 modelGroup= ModelGroup()
         setUserAdapter()
-
+        binding.tvSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String): Boolean {
+                // inside on query text change method we are
+                // calling a method to filter our recycler view.
+                filter(newText)
+                return false
+            }
+        })
 
         binding.floatingaction.setOnClickListener {
     showDialogAddGroup()
         }
 
         return root
+    }
+
+    private fun filter(text: String) {
+        // creating a new array list to filter our data.
+        val filteredlist = ArrayList<ModelGroup>()
+
+            for (user in list) {
+                // checking if the entered string matched with any item of our recycler view.
+                if (user.name.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
+                    // if the item is matched we are
+                    // adding it to our filtered list.
+                    filteredlist.add(user)
+                }
+            }
+
+            if (filteredlist.isEmpty()) {
+                // if no item is added in filtered list we are
+                // displaying a toast message as no data found.
+                Toast.makeText(mContext, "No Data Found..", Toast.LENGTH_SHORT).show()
+
+            } else {
+                binding.rvGroups.adapter= AdapterGroup(filteredlist,this@FragmentGroup)
+
+            }
+
     }
     private fun showDialogAddGroup() {
         dialog = Dialog(mContext, R.style.FullWidthDialog)
@@ -191,7 +228,7 @@ modelGroup= ModelGroup()
 
     fun setUserAdapter() {
 
-        var list= ArrayList<ModelGroup> ()
+
         lifecycleScope.launch {
             utils.startLoadingAnimation()
             userViewModel.getGroupList()
@@ -210,7 +247,7 @@ modelGroup= ModelGroup()
 
                         }
                         binding.rvGroups.layoutManager = LinearLayoutManager(mContext)
-                        binding.rvGroups.adapter= AdapterGroup(list,this@FragmentGroup)
+                        binding.rvGroups.adapter= AdapterGroup(list.sortedByDescending { it.createdAt },this@FragmentGroup)
 
                     } else
                     {
@@ -320,7 +357,7 @@ modelGroup=modelGroup1
 
         var userInGroup = emptyList<ModelUser>()
         val userList = sharedPrefManager.getUserList()
-        Toast.makeText(mContext, "exist" + userList.size, Toast.LENGTH_SHORT).show()
+
 
         userInGroup = userList.filter { user ->
             modelGroup1.users.contains(user.userId)

@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.experimental.UseExperimental
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +44,7 @@ import com.urduboltv.admin.databinding.ActivityGroupMembersBinding
 import com.urduboltv.admin.databinding.ActivitySeasonBinding
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 class ActivityGroupMembers : AppCompatActivity(),AdapterManageVideo.OnItemClickListener,AdapterUserStatus.OnItemClickListener,AdapterAssignedVideo.OnItemClickListener {
     private val videoViewModel: VideoViewModel by viewModels()
@@ -50,13 +52,15 @@ class ActivityGroupMembers : AppCompatActivity(),AdapterManageVideo.OnItemClickL
     private val userViewModel: UserViewModel by viewModels()
     private val seasonViewModel: SeasonViewModel by viewModels()
     private val db = Firebase.firestore
-
+    val videoDocumentList = mutableListOf<ModelVideo>() // Create an empty list to store documents
+    var userNotInGroup = emptyList<ModelUser>()
     private val IMAGE_PICKER_REQUEST_CODE = 200
 
     private lateinit var modelSeason: ModelSeason
     private var imageURI: Uri? = null
 
     private lateinit var adapter: AdapterAssignedVideo
+    private lateinit var adapterUser: AdapterUserStatus
 
     private lateinit var utils: Utils
     private lateinit var mContext: Context
@@ -88,6 +92,7 @@ videoList= emptyList()
 
 
         adapter = AdapterAssignedVideo("Assigned",mContext, emptyList(), this@ActivityGroupMembers)
+        adapterUser = AdapterUserStatus("Assigned",mContext, emptyList(), this@ActivityGroupMembers)
 
         binding.rvvideos.layoutManager = LinearLayoutManager(mContext)
         binding.rvvideos.adapter = adapter
@@ -97,9 +102,79 @@ binding.floatingaction.setOnClickListener()
   showDialogAdd()
 }
         setAdapter()
+        binding.tvSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String): Boolean {
+                // inside on query text change method we are
+                // calling a method to filter our recycler view.
+                filter(newText)
+                return false
+            }
+        })
 
 
     }
+
+
+
+
+    private fun filter(text: String) {
+        // creating a new array list to filter our data.
+        val filteredlist = ArrayList<ModelVideo>()
+
+            for (user in videoDocumentList) {
+                // checking if the entered string matched with any item of our recycler view.
+                if (user.episodeno.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
+                    // if the item is matched we are
+                    // adding it to our filtered list.
+                    filteredlist.add(user)
+                }
+            }
+
+            if (filteredlist.isEmpty()) {
+                // if no item is added in filtered list we are
+                // displaying a toast message as no data found.
+                Toast.makeText(mContext, "No Data Found..", Toast.LENGTH_SHORT).show()
+
+            } else {
+
+                // at last we are passing that filtered
+                // list to our adapter class.
+
+
+adapter.updateList(filteredlist)
+
+
+            }
+
+        // running a for loop to compare elements.
+
+    }
+    private fun filterUser(text: String) {
+        // creating a new array list to filter our data.
+        val filteredlist = ArrayList<ModelUser>()
+
+        for (user in userNotInGroup) {
+            // checking if the entered string matched with any item of our recycler view.
+            if (user.name.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
+                // if the item is matched we are adding it to our filtered list.
+                filteredlist.add(user)
+            }
+        }
+
+        if (filteredlist.isEmpty()) {
+            // if no item is added in filtered list we are displaying a toast message as no data found.
+            Toast.makeText(mContext, "No Data Found..", Toast.LENGTH_SHORT).show()
+        } else {
+            // at last we are passing that filtered list to our adapter class.
+            adapterUser.updateList(filteredlist)
+        }
+        // running a for loop to compare elements.
+    }
+
+
 
     private fun showDialogAdd() {
         val builder = AlertDialog.Builder(mContext)
@@ -118,14 +193,41 @@ binding.floatingaction.setOnClickListener()
         dialog.show()
     }
     private fun showdialogAssignVideo() {
+        var unassignedVideoList = mutableListOf<ModelVideo>()
         val bottomdialog = BottomSheetDialog(mContext)
         val bottomSheet = layoutInflater.inflate(R.layout.dialog_bottom, null)
         bottomdialog.setContentView(bottomSheet)
 
         var rv = bottomdialog.findViewById<RecyclerView>(R.id.recyclerViewCustomBottomSheet)
+        var search = bottomdialog.findViewById<SearchView>(R.id.tvSearchView)!!
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String): Boolean {
+                val filteredlist = ArrayList<ModelVideo>()
+
+                for (user in unassignedVideoList) {
+                    // checking if the entered string matched with any item of our recycler view.
+                    if (user.episodeno.toLowerCase().contains(newText.lowercase(Locale.getDefault()))) {
+                        // if the item is matched we are adding it to our filtered list.
+                        filteredlist.add(user)
+                    }
+                }
+
+                if (filteredlist.isEmpty()) {
+                    // if no item is added in filtered list we are displaying a toast message as no data found.
+                    Toast.makeText(mContext, "No Data Found..", Toast.LENGTH_SHORT).show()
+                } else {
+                    rv?.adapter = AdapterManageVideo("Unassigned", mContext, filteredlist, this@ActivityGroupMembers)
+
+                }
+                // running a for loop to compare elements.
+                return false
+            }
+        })
 
 
-        var unassignedVideoList = mutableListOf<ModelVideo>()
 
         var list= sharedPrefManager.getPrivateVideoList()
 
@@ -136,12 +238,8 @@ binding.floatingaction.setOnClickListener()
             }
 
 
-for(item in unassignedVideoList)
-{
-    Toast.makeText(mContext, item.downloadType.toString(), Toast.LENGTH_SHORT).show()
-}
         rv?.layoutManager = LinearLayoutManager(mContext)
-        rv?.adapter = AdapterManageVideo("Unassigned", mContext, unassignedVideoList, this@ActivityGroupMembers)
+        rv?.adapter = AdapterManageVideo("Unassigned", mContext, unassignedVideoList.sortedBy { it.episodeno.toInt() }, this@ActivityGroupMembers)
 
 
         bottomdialog.show()
@@ -154,20 +252,45 @@ for(item in unassignedVideoList)
         bottomdialog.setContentView(bottomSheet)
 
         var rv = bottomdialog.findViewById<RecyclerView>(R.id.recyclerViewCustomBottomSheet)
+        var search = bottomdialog.findViewById<SearchView>(R.id.tvSearchView)!!
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String): Boolean {
+                val filteredlist = ArrayList<ModelUser>()
+
+                for (user in userNotInGroup) {
+                    // checking if the entered string matched with any item of our recycler view.
+                    if (user.name.toLowerCase().contains(newText.lowercase(Locale.getDefault()))) {
+                        // if the item is matched we are adding it to our filtered list.
+                        filteredlist.add(user)
+                    }
+                }
+
+                if (filteredlist.isEmpty()) {
+                    // if no item is added in filtered list we are displaying a toast message as no data found.
+                    Toast.makeText(mContext, "No Data Found..", Toast.LENGTH_SHORT).show()
+                } else {
+                    // at last we are passing that filtered list to our adapter class.
+                    rv?.adapter = AdapterUserStatus("UnAssigned", mContext, filteredlist, this@ActivityGroupMembers)
+
+                }
+                // running a for loop to compare elements.
+                return false
+            }
+        })
 
         // Start animation
         utils.startLoadingAnimation()
-        var userNotInGroup = emptyList<ModelUser>()
+
         lifecycleScope.launch {
 
             userViewModel.getGroupMember(modelGroup.doc_Id).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val documentSnapshot = task.result
                     val groupMembersList = documentSnapshot.toObject(ModelGroup::class.java)?.users ?: emptyList()
-for(id in groupMembersList)
-{
-    Toast.makeText(mContext, id.toString(), Toast.LENGTH_SHORT).show()
-}
+
                     val userList = sharedPrefManager.getUserList()
 
                     userNotInGroup = userList.filterNot { user ->
@@ -175,7 +298,7 @@ for(id in groupMembersList)
                     }
 
                     rv?.layoutManager = LinearLayoutManager(mContext)
-                    rv?.adapter = AdapterUserStatus("UnAssigned", mContext, userNotInGroup, this@ActivityGroupMembers)
+                    rv?.adapter = AdapterUserStatus("UnAssigned", mContext, userNotInGroup.sortedBy { it.name }, this@ActivityGroupMembers)
 
                     // End animation
                     utils.endLoadingAnimation()
@@ -243,7 +366,7 @@ lifecycleScope.launch {
         // Handle delete click if needed
     }
     private fun setAdapter() {
-
+utils.startLoadingAnimation()
         val videoIdList = mutableListOf<String>()
 
         lifecycleScope.launch {
@@ -268,13 +391,13 @@ lifecycleScope.launch {
 
             }
 
-            val videoDocumentList = mutableListOf<ModelVideo>() // Create an empty list to store documents
 if(videoIdList.isNotEmpty())
 {
 
             videoViewModel.getAssignedVideoList(videoIdList)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+                        utils.endLoadingAnimation()
                         val documents = task.result
                         if (documents != null && !documents.isEmpty) {
 
@@ -283,13 +406,13 @@ if(videoIdList.isNotEmpty())
                                 videoDocumentList.add(videoData) // Add each document to the list
                             }
                             binding.tvnothing.visibility=View.GONE
-adapter.updateList(videoDocumentList)
+adapter.updateList(videoDocumentList.sortedBy { it.episodeno.toInt() })
 
                         } else {
 
                         }
                     } else {
-
+                        utils.endLoadingAnimation()
                         val exception = task.exception
 
                     }
@@ -297,7 +420,7 @@ adapter.updateList(videoDocumentList)
 }
             else
 {
-
+    utils.endLoadingAnimation()
     adapter.updateList(emptyList())
 
     binding.tvnothing.visibility=View.VISIBLE
